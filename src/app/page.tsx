@@ -9,7 +9,7 @@ const features = [
   {
     emoji: "📋",
     title: "수업 보드",
-    desc: "실시간 교정, 표현 기록, 피드백을 한 화면에서",
+    desc: "실시간 피드백, 교정 노트, 표현 기록을 한 화면에서",
   },
   {
     emoji: "📅",
@@ -19,12 +19,12 @@ const features = [
   {
     emoji: "📊",
     title: "학습 리포트",
-    desc: "출석률, 교정 추이, 실력 변화를 한눈에",
+    desc: "출석률, 진도, 실력 변화를 한눈에 확인",
   },
   {
     emoji: "📚",
     title: "교재 관리",
-    desc: "PDF, 링크, 텍스트 교재를 수업에 바로 연결",
+    desc: "PDF, 링크, 텍스트 자료를 수업에 바로 연결",
   },
   {
     emoji: "💰",
@@ -51,23 +51,23 @@ const steps = [
   },
   {
     num: "03",
-    title: "수업 보드에서 함께 영어를 배워요",
-    desc: "실시간 교정과 피드백으로 효과적인 수업이 시작돼요.",
+    title: "수업 보드에서 함께 수업을 시작해요",
+    desc: "실시간 피드백과 기록으로 효과적인 수업이 시작돼요.",
   },
 ];
 
 const teacherFeatures = [
   "학생 관리 대시보드",
-  "수업 중 실시간 교정 노트",
+  "수업 중 실시간 피드백 & 교정",
   "교재 업로드 및 관리",
-  "수강료 자동 청구",
+  "수강료 관리 & 청구",
 ];
 
 const studentFeatures = [
   "나의 학습 리포트",
-  "수업 교정 기록 복습",
+  "수업 기록 복습",
   "숙제 관리",
-  "단어장",
+  "교재 & 자료 열람",
 ];
 
 export default function Home() {
@@ -180,12 +180,12 @@ export default function Home() {
           {/* Badge */}
           <div className="animate-fade-in-up inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 px-4 py-1.5 rounded-full text-sm font-medium mb-8">
             <span className="text-base">📚</span>
-            해나쌤과 함께하는 영어 수업
+            1:1 수업 관리 플랫폼
           </div>
 
           {/* Heading */}
           <h1 className="animate-fade-in-up animation-delay-100 text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6">
-            영어 수업,{" "}
+            수업 관리,{" "}
             <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
               더 스마트하게
             </span>
@@ -193,9 +193,9 @@ export default function Home() {
 
           {/* Subtitle */}
           <p className="animate-fade-in-up animation-delay-200 text-lg sm:text-xl text-zinc-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            선생님과 학생을 위한 올인원 영어 수업 관리 플랫폼.
+            선생님과 학생을 위한 올인원 수업 관리 플랫폼.
             <br className="hidden sm:block" />
-            수업 준비부터 복습까지, ENGZ 하나로 충분해요.
+            스케줄, 교재, 피드백, 수강료까지 ENGZ 하나로 충분해요.
           </p>
 
           {/* CTA Buttons */}
@@ -391,7 +391,7 @@ export default function Home() {
                 지금 바로 시작하세요
               </h2>
               <p className="text-orange-100 text-lg mb-8 max-w-md mx-auto">
-                ENGZ와 함께 더 나은 영어 수업을 만들어 보세요.
+                ENGZ와 함께 더 나은 수업을 만들어 보세요.
               </p>
               <a
                 href={APP_URL}

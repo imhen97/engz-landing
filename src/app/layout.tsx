@@ -8,14 +8,14 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "ENGZ - 영어 수업 관리 플랫폼",
+  title: "ENGZ - 1:1 수업 관리 플랫폼",
   description:
-    "선생님과 학생을 위한 올인원 영어 수업 관리 플랫폼. 실시간 교정, 스케줄 관리, 학습 리포트까지.",
-  keywords: ["영어", "과외", "수업 관리", "영어 수업", "ENGZ", "잉즈"],
+    "선생님과 학생을 위한 올인원 수업 관리 플랫폼. 스케줄, 교재, 피드백, 수강료까지 ENGZ 하나로.",
+  keywords: ["과외", "수업 관리", "1:1 수업", "과외 관리", "ENGZ", "잉즈", "튜터링"],
   openGraph: {
-    title: "ENGZ - 영어 수업 관리 플랫폼",
+    title: "ENGZ - 1:1 수업 관리 플랫폼",
     description:
-      "선생님과 학생을 위한 올인원 영어 수업 관리 플랫폼",
+      "선생님과 학생을 위한 올인원 수업 관리 플랫폼",
     type: "website",
     url: "https://eng-z.com",
   },
