@@ -154,6 +154,9 @@ function useScrollAnimation() {
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const leftCircleRef = useRef<HTMLDivElement>(null);
+  const rightCircleRef = useRef<HTMLDivElement>(null);
+  const heroContentRef = useRef<HTMLDivElement>(null);
 
   // Contact form
   const [name, setName] = useState("");
@@ -164,7 +167,23 @@ export default function Home() {
   useScrollAnimation();
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
+    const handler = () => {
+      setScrolled(window.scrollY > 20);
+
+      // Hero scroll parallax — circles open on scroll
+      const scrollY = window.scrollY;
+      const vh = window.innerHeight;
+      const progress = Math.min(scrollY / vh, 1); // 0 to 1
+      if (leftCircleRef.current) {
+        leftCircleRef.current.style.transform = `translateX(${-progress * 800}px)`;
+      }
+      if (rightCircleRef.current) {
+        rightCircleRef.current.style.transform = `translateX(${progress * 800}px)`;
+      }
+      if (heroContentRef.current) {
+        heroContentRef.current.style.opacity = `${1 - progress}`;
+      }
+    };
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
@@ -266,17 +285,17 @@ export default function Home() {
       {/* ===== HERO SECTION ===== */}
       <section className="relative h-[100vh] overflow-hidden bg-white">
         {/* Left Circle */}
-        <div className="absolute top-[-30%] left-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none">
+        <div ref={leftCircleRef} className="absolute top-[-30%] left-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none transition-transform duration-100 will-change-transform">
           <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF5C39] via-[#FF6B4A] to-[#FF7A5C] shadow-2xl" />
         </div>
 
         {/* Right Circle */}
-        <div className="absolute top-[-30%] right-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none">
+        <div ref={rightCircleRef} className="absolute top-[-30%] right-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none transition-transform duration-100 will-change-transform">
           <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF6B4A] via-[#FF7A5C] to-[#FF8A6C] shadow-2xl" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
+        <div ref={heroContentRef} className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center will-change-[opacity] transition-opacity duration-100">
           <div className="animate-fade-in-up">
             <h1 className="text-4xl sm:text-6xl lg:text-8xl font-extrabold text-gray-800 mb-4 sm:mb-6 leading-tight">
               Welcome to ENGZ
