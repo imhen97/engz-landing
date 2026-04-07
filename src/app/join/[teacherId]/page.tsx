@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 const SUPABASE_URL = "https://avijvkkshyfhvnqdqipv.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aWp2a2tzaHlmaHZucWRxaXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwMDkwMTIsImV4cCI6MjA2NDU4NTAxMn0.yMNBhFgi-BN2x1gSCXJgVNSqDqoFocVDaHnFBmE1IZo";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aWp2a2tzaHlmaHZucWRxaXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MTI2NDQsImV4cCI6MjA5MDM4ODY0NH0.98JrKiNeFwt-kgM4HjWrjiDzRda5zrJrNM5-u0X4MME";
 
 async function getTeacherName(teacherId: string): Promise<string | null> {
   try {
