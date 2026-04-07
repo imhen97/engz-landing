@@ -230,7 +230,7 @@ export default function Home() {
               문의
             </a>
             <a
-              href={APP_URL}
+              href={APP_URL} target="_blank" rel="noopener noreferrer"
               className="text-sm font-semibold text-white bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] px-5 py-2 rounded-full hover:shadow-lg hover:shadow-orange-200 transition-all hover:-translate-y-0.5"
             >
               시작하기
@@ -272,7 +272,7 @@ export default function Home() {
                 문의
               </a>
               <a
-                href={APP_URL}
+                href={APP_URL} target="_blank" rel="noopener noreferrer"
                 className="text-sm font-semibold text-white bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] px-5 py-2.5 rounded-full text-center"
               >
                 시작하기
@@ -311,7 +311,7 @@ export default function Home() {
 
             <div className="animate-fade-in-up animation-delay-300">
               <a
-                href={APP_URL}
+                href={APP_URL} target="_blank" rel="noopener noreferrer"
                 className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold"
               >
                 수업 시작하기 &rarr;
@@ -479,7 +479,7 @@ export default function Home() {
 
           <div className="animate-on-scroll text-center">
             <a
-              href={APP_URL}
+              href={APP_URL} target="_blank" rel="noopener noreferrer"
               className="inline-block text-lg sm:text-xl px-12 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold"
             >
               선생님으로 시작하기 &rarr;
@@ -508,7 +508,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href={APP_URL}
+                href={APP_URL} target="_blank" rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-block text-base sm:text-xl px-8 py-4 sm:py-5 rounded-full bg-white text-gray-900 shadow-2xl hover:scale-105 transition-all font-bold text-center"
               >
                 무료 체험 시작하기
