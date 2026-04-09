@@ -524,6 +524,47 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== DOWNLOAD SECTION ===== */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="animate-on-scroll">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3">앱으로 더 편하게</h2>
+            <p className="text-zinc-500 mb-10">설치하면 앱처럼 바로 수업을 시작할 수 있어요</p>
+
+            <div className="grid sm:grid-cols-3 gap-6 max-w-2xl mx-auto">
+              {/* Desktop */}
+              <a href="https://app.eng-z.com" target="_blank" rel="noopener noreferrer"
+                className="group p-6 rounded-2xl border-2 border-zinc-100 hover:border-[#FF5C39] hover:shadow-lg transition-all">
+                <div className="text-3xl mb-3">🖥️</div>
+                <h3 className="font-bold text-zinc-800 mb-1">데스크톱</h3>
+                <p className="text-xs text-zinc-400 mb-3">Chrome에서 설치</p>
+                <span className="text-xs font-semibold text-[#FF5C39] group-hover:underline">열기 →</span>
+              </a>
+
+              {/* iOS */}
+              <a href="https://app.eng-z.com" target="_blank" rel="noopener noreferrer"
+                className="group p-6 rounded-2xl border-2 border-zinc-100 hover:border-[#FF5C39] hover:shadow-lg transition-all">
+                <div className="text-3xl mb-3">📱</div>
+                <h3 className="font-bold text-zinc-800 mb-1">iPhone / iPad</h3>
+                <p className="text-xs text-zinc-400 mb-3">Safari → 공유 → 홈 화면에 추가</p>
+                <span className="text-xs font-semibold text-[#FF5C39] group-hover:underline">열기 →</span>
+              </a>
+
+              {/* Android */}
+              <a href="https://app.eng-z.com" target="_blank" rel="noopener noreferrer"
+                className="group p-6 rounded-2xl border-2 border-zinc-100 hover:border-[#FF5C39] hover:shadow-lg transition-all">
+                <div className="text-3xl mb-3">🤖</div>
+                <h3 className="font-bold text-zinc-800 mb-1">Android</h3>
+                <p className="text-xs text-zinc-400 mb-3">Chrome → 설치 배너 자동</p>
+                <span className="text-xs font-semibold text-[#FF5C39] group-hover:underline">열기 →</span>
+              </a>
+            </div>
+
+            <p className="text-xs text-zinc-300 mt-8">앱 스토어 없이 브라우저에서 바로 설치 · 자동 업데이트 · 무료</p>
+          </div>
+        </div>
+      </section>
+
       {/* ===== CONTACT SECTION ===== */}
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-5xl mx-auto">
