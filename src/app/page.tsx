@@ -163,6 +163,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
 
   useScrollAnimation();
 
@@ -310,12 +311,12 @@ export default function Home() {
             </p>
 
             <div className="animate-fade-in-up animation-delay-300">
-              <a
-                href={APP_URL} target="_blank" rel="noopener noreferrer"
-                className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold"
+              <button
+                onClick={() => setShowInstallModal(true)}
+                className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold cursor-pointer"
               >
                 수업 시작하기 &rarr;
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -691,6 +692,79 @@ export default function Home() {
           <p>&copy; 2026 ENGZ. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* ===== INSTALL MODAL ===== */}
+      {showInstallModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowInstallModal(false)}>
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setShowInstallModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF5C39] to-[#FF7A5C] flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                E
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">ENGZ 앱 설치하기</h3>
+              <p className="text-gray-500 mt-2 text-sm">홈 화면에 추가하면 앱처럼 사용할 수 있어요</p>
+            </div>
+
+            <div className="space-y-4">
+              {/* Chrome / Edge */}
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🖥️</span>
+                  <span className="font-semibold text-gray-800 text-sm">Chrome / Edge (PC)</span>
+                </div>
+                <ol className="text-sm text-gray-600 space-y-1 ml-7 list-decimal">
+                  <li><a href="https://app.eng-z.com" target="_blank" rel="noopener" className="text-[#FF5C39] underline font-medium">app.eng-z.com</a> 접속</li>
+                  <li>주소창 오른쪽 <span className="font-medium">설치 아이콘 (⊕)</span> 클릭</li>
+                  <li>&quot;설치&quot; 버튼 클릭하면 완료!</li>
+                </ol>
+              </div>
+
+              {/* iOS Safari */}
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">📱</span>
+                  <span className="font-semibold text-gray-800 text-sm">iPhone / iPad (Safari)</span>
+                </div>
+                <ol className="text-sm text-gray-600 space-y-1 ml-7 list-decimal">
+                  <li>Safari로 <a href="https://app.eng-z.com" target="_blank" rel="noopener" className="text-[#FF5C39] underline font-medium">app.eng-z.com</a> 접속</li>
+                  <li>하단 <span className="font-medium">공유 버튼 (↑)</span> 탭</li>
+                  <li>&quot;홈 화면에 추가&quot; 선택</li>
+                </ol>
+              </div>
+
+              {/* Android Chrome */}
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🤖</span>
+                  <span className="font-semibold text-gray-800 text-sm">Android (Chrome)</span>
+                </div>
+                <ol className="text-sm text-gray-600 space-y-1 ml-7 list-decimal">
+                  <li>Chrome으로 <a href="https://app.eng-z.com" target="_blank" rel="noopener" className="text-[#FF5C39] underline font-medium">app.eng-z.com</a> 접속</li>
+                  <li>상단 <span className="font-medium">⋮ 메뉴</span> &rarr; &quot;앱 설치&quot;</li>
+                  <li>&quot;설치&quot; 탭하면 완료!</li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="mt-6 text-center">
+              <a
+                href="https://app.eng-z.com"
+                target="_blank"
+                rel="noopener"
+                className="inline-block text-sm text-gray-400 hover:text-[#FF5C39] transition underline"
+              >
+                웹 브라우저로 바로 열기
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
