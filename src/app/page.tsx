@@ -300,18 +300,15 @@ export default function Home() {
           className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center will-change-[opacity] transition-opacity duration-100"
         >
           <div className="animate-fade-in-up">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 sm:mb-8 leading-[1.15] tracking-tight">
-              대표의 영어,
-              <br />
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-gray-900 mb-6 sm:mb-8 leading-[1.05] tracking-tight">
+              Welcome to{" "}
               <span className="bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] bg-clip-text text-transparent">
-                1:1로 가르칩니다.
+                ENGZ
               </span>
             </h1>
 
             <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
-              9년차 비즈니스 영어 1위 강사 김해나가
-              <br className="hidden sm:block" />
-              {" "}당신만을 위한 커리큘럼을 설계합니다.
+              1:1 맞춤형 커리큘럼 설계 &nbsp;·&nbsp; 체계적인 맞춤형 교육 시스템
             </p>
 
             {/* 신뢰 배지 — 한 줄, 작게 */}
