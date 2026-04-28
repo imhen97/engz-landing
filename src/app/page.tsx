@@ -4,160 +4,154 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 
 /* ---------------------------------------------------------------------------
- * eng-z.com — 김해나 1:1 프리미엄 영어
+ * eng-z.com — 김해나 1:1 프리미엄 영어 (premium tone v2)
  *
- * 원래 디자인 (Hero 양쪽 주황 원 + 스크롤 패럴랙스, 3-card Why, 6-card
- * features grid, 2-card profile section, big CTA, download, contact form,
- * install modal) 을 그대로 유지하면서 콘텐츠만 김해나 브랜드로 교체.
+ * 8 섹션 + Footer:
+ *   1. Hero (변경안 A)
+ *   2. Social Proof — 누가 배우고 있나
+ *   3. 차별점 3가지
+ *   4. 수업 종류 3카드
+ *   5. 수강생 후기
+ *   6. 강사 소개 (김해나)
+ *   7. 무료 영어 레벨 진단
+ *   8. FAQ + 하단 CTA
+ *   Footer
  *
- * 가격 / 후기 본문 / 환불·시간 정책은 [TBD] 로 두어 자료 받으면 즉시 반영.
+ * 톤: 짧고 단정 / 숫자·사실 / 결과 중심 / 외국어 직역체 금지 / 느낌표·호객 X.
+ * 디자인: 흰 배경 + #FF5C39 accent, 여백을 충분히. 기존 hero 양쪽 원 + 스크롤
+ * 패럴랙스 유지.
  * ------------------------------------------------------------------------ */
 
 const APP_URL = "https://app.eng-z.com/login";
 const KAKAO_CHANNEL = "https://pf.kakao.com/_engz_korea";
 
+const studentTypes = [
+  { label: "현직 CEO" },
+  { label: "의사" },
+  { label: "대기업 임원" },
+  { label: "파일럿" },
+  { label: "모델" },
+];
+
 const whyEngzCards = [
   {
-    icon: (
-      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-      </svg>
-    ),
+    badge: "01",
     title: "한 사람을 위한 한 수업",
     description:
       "CEO에겐 협상 영어, 의사에겐 학회 영어. 같은 수업을 두 번 받는 분이 없습니다.",
-    gradient: "from-red-500 to-orange-500",
   },
   {
-    icon: (
-      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    ),
-    title: "수업이 시작되기 전에 끝나 있는 준비",
+    badge: "02",
+    title: "수업이 시작되기 전, 이미 끝나 있는 준비",
     description:
-      "9년치 학습 데이터를 분석해 다음 수업 자료가 자동으로 만들어져 있습니다. 강사는 가르치는 일에만, 시스템이 나머지를 합니다.",
-    gradient: "from-orange-500 to-amber-500",
+      "9년치 학습 데이터로 다음 수업 자료가 자동으로 만들어집니다. 강사는 가르치는 일에만 집중합니다.",
   },
   {
-    icon: (
-      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-      </svg>
-    ),
-    title: "검증된 9년",
+    badge: "03",
+    title: "9년 동안 검증된 결과",
     description:
-      "별점 5.0의 후기 30건 이상, 국내 주요 과외 플랫폼 비즈니스 영어 1위. 자랑이 아니라 결과입니다.",
-    gradient: "from-amber-500 to-yellow-500",
+      "별점 5.0 후기 30+건, 국내 주요 과외 플랫폼 비즈니스 영어 1위. 자랑이 아니라 결과입니다.",
   },
 ];
 
-const featuresGrid = [
+const courses = [
   {
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
     title: "비즈니스 영어",
-    description: "임원·대표·컨설턴트를 위한 실전 영어",
-    features: ["협상·미팅 시뮬레이션", "이메일·보고서 첨삭", "글로벌 발표 준비"],
+    subtitle: "For Executives & CEOs",
+    audience: "임원·대표·컨설턴트",
+    items: [
+      "협상 & 미팅 영어",
+      "프레젠테이션 영어",
+      "이메일 & 보고 영어",
+    ],
+    duration: "[입력 필요]",
+    price: "상담 후 안내",
   },
   {
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-      </svg>
-    ),
     title: "OPIc · IELTS",
-    description: "시험과 실력을 한 번에 끌어올리는 코스",
-    features: ["기출 패턴 분석", "1:1 스피킹 훈련", "AL · 7.0+ 합격 전략"],
+    subtitle: "For Test Preparation",
+    audience: "이직·승진·유학 준비",
+    items: [
+      "OPIc IH ~ AL 목표",
+      "IELTS 7.0+ 목표",
+      "시험 전략 + 실력 향상",
+    ],
+    duration: "[입력 필요]",
+    price: "상담 후 안내",
   },
   {
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-      </svg>
-    ),
     title: "영어회화",
-    description: "일상이 영어인 전문직을 위한 회화",
-    features: ["네트워킹·소셜 영어", "출장·여행 시뮬레이션", "문화 코드와 뉘앙스"],
+    subtitle: "For Daily Conversation",
+    audience: "일상이 영어인 전문직",
+    items: [
+      "네트워킹 & 소셜 영어",
+      "출장·여행 시뮬레이션",
+      "문화 코드와 뉘앙스",
+    ],
+    duration: "[입력 필요]",
+    price: "상담 후 안내",
   },
-  {
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-      </svg>
-    ),
-    title: "매 수업 다시 짜는 커리큘럼",
-    description: "9년치 학습 데이터로 한 사람씩 설계",
-    features: ["직군별 표현 큐레이션", "지난 수업 약점 자동 보완", "오늘 가져갈 수업만 정확히"],
-  },
-  {
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-      </svg>
-    ),
-    title: "잊혀지지 않는 학습",
-    description: "수업·숙제·복습이 시스템 안에서 이어집니다",
-    features: ["매주 학습 리포트", "오늘 배운 표현 자동 복습", "교정 이력 한눈에"],
-  },
-  {
-    icon: (
-      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg>
-    ),
-    title: "어디서든 같은 퀄리티",
-    description: "출장·해외 거주 중에도 끊김 없이",
-    features: ["화상 + 수업 보드 동시 편집", "자동 녹화·다시 보기", "위치·시차 무관"],
-  },
+];
+
+const testimonials = [
+  { name: "[수강생 1]", role: "[직업]", quote: "[후기 내용 입력 필요]" },
+  { name: "[수강생 2]", role: "[직업]", quote: "[후기 내용 입력 필요]" },
+  { name: "[수강생 3]", role: "[직업]", quote: "[후기 내용 입력 필요]" },
 ];
 
 const haenaCredentials = [
-  "9년차 1:1 영어 강사",
-  "비즈니스 영어 분야 1위 (국내 주요 과외 플랫폼)",
-  "별점 5.0 / 후기 30건+",
-  "OPIc AL · TOEIC 975 · 동국대 화공생물공학과",
+  "동국대학교 화공생물공학과",
+  "1:1 영어 과외 9년차",
+  "국내 주요 과외 플랫폼 비즈니스 영어 1위",
+  "OPIc AL · TOEIC 975",
+  "해외 국제학교 경험",
+  "인강 제작 경험",
+  "자체 영어 학습 시스템 개발",
 ];
 
-const aiSystemFeatures = [
-  "수업 자료 자동 생성 (커리큘럼·교안·숙제)",
-  "표현·교정·진도 실시간 추적",
-  "학습자 약점 자동 분석·복습",
-  "어디서든 동일한 학습 환경",
+const faqs = [
+  {
+    q: "다른 1:1 영어 과외와 무엇이 다른가요?",
+    a: "9년차 검증된 강사가 직접 개발한 학습 시스템으로 1:1 맞춤 커리큘럼과 교안을 만듭니다. 학생·숙제·진도가 자동으로 관리되어, 일반 과외와 차원이 다른 학습 경험을 제공합니다.",
+  },
+  {
+    q: "어떤 분들이 주로 수강하시나요?",
+    a: "기업 대표·임원, 의사, 파일럿, 모델, 컨설턴트 등 영어가 매일 필요한 전문직이 주로 수강합니다.",
+  },
+  {
+    q: "수업은 어떻게 진행되나요?",
+    a: "1:1 화상 수업으로 진행됩니다. 자체 수업 시스템에서 커리큘럼·교안·숙제·진도가 모두 관리됩니다.",
+  },
+  {
+    q: "시간 약속을 지키기 어려운데 가능한가요?",
+    a: "임원·대표 일정을 고려하여 유연한 스케줄링이 가능합니다. 사전 협의 후 일정을 조정합니다.",
+  },
+  {
+    q: "첫 수업 전에 미리 준비할 것이 있나요?",
+    a: "무료 영어 진단을 통해 현재 수준을 파악합니다. 별도 준비물은 필요하지 않습니다.",
+  },
+  {
+    q: "환불 정책은 어떻게 되나요?",
+    a: "[환불 정책 입력 필요]",
+  },
 ];
-
-function CheckIcon({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-    </svg>
-  );
-}
 
 function useScrollAnimation() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const init = useCallback(() => {
     if (typeof window === "undefined") return;
-
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-visible");
-          }
+          if (entry.isIntersecting) entry.target.classList.add("animate-visible");
         });
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
     );
-
-    const elements = document.querySelectorAll(
-      ".animate-on-scroll, .animate-on-scroll-scale, .animate-on-scroll-left, .animate-on-scroll-right",
-    );
-    elements.forEach((el) => observerRef.current?.observe(el));
+    document
+      .querySelectorAll(".animate-on-scroll, .animate-on-scroll-scale, .animate-on-scroll-left, .animate-on-scroll-right")
+      .forEach((el) => observerRef.current?.observe(el));
   }, []);
 
   useEffect(() => {
@@ -173,31 +167,21 @@ export default function Home() {
   const rightCircleRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
 
-  // Contact / consultation form
+  // Diagnose form
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
-  const [showInstallModal, setShowInstallModal] = useState(false);
 
   useScrollAnimation();
 
   useEffect(() => {
     const handler = () => {
       setScrolled(window.scrollY > 20);
-
-      const scrollY = window.scrollY;
-      const vh = window.innerHeight;
-      const progress = Math.min(scrollY / vh, 1);
-      if (leftCircleRef.current) {
-        leftCircleRef.current.style.transform = `translateX(${-progress * 800}px)`;
-      }
-      if (rightCircleRef.current) {
-        rightCircleRef.current.style.transform = `translateX(${progress * 800}px)`;
-      }
-      if (heroContentRef.current) {
-        heroContentRef.current.style.opacity = `${1 - progress}`;
-      }
+      const progress = Math.min(window.scrollY / window.innerHeight, 1);
+      if (leftCircleRef.current) leftCircleRef.current.style.transform = `translateX(${-progress * 800}px)`;
+      if (rightCircleRef.current) rightCircleRef.current.style.transform = `translateX(${progress * 800}px)`;
+      if (heroContentRef.current) heroContentRef.current.style.opacity = `${1 - progress}`;
     };
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
@@ -205,7 +189,7 @@ export default function Home() {
 
   function handleContactSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const subject = encodeURIComponent(`[김해나 1:1 영어 상담] ${name}`);
+    const subject = encodeURIComponent(`[김해나 1:1 영어 진단] ${name}`);
     const body = encodeURIComponent(`이름: ${name}\n이메일: ${email}\n\n${message}`);
     window.location.href = `mailto:imhen97@eng-z.com?subject=${subject}&body=${body}`;
     setSent(true);
@@ -217,9 +201,7 @@ export default function Home() {
       {/* ===== Sticky Navigation ===== */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/80 backdrop-blur-xl shadow-sm border-b border-zinc-100"
-            : "bg-transparent"
+          scrolled ? "bg-white/85 backdrop-blur-xl shadow-sm border-b border-zinc-100" : "bg-transparent"
         }`}
       >
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between h-16">
@@ -232,16 +214,16 @@ export default function Home() {
 
           <div className="hidden md:flex items-center gap-8">
             <a href="#why" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-              왜 김해나
+              차별점
             </a>
             <a href="#courses" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-              수업 종류
+              수업 안내
             </a>
             <a href="#instructor" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
               강사 소개
             </a>
-            <a href="#contact" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-              상담
+            <a href="#diagnose" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
+              영어 진단
             </a>
             <a
               href={KAKAO_CHANNEL}
@@ -249,7 +231,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="text-sm font-semibold text-white bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] px-5 py-2 rounded-full hover:shadow-lg hover:shadow-orange-200 transition-all hover:-translate-y-0.5"
             >
-              무료 상담
+              상담
             </a>
           </div>
 
@@ -271,44 +253,41 @@ export default function Home() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-zinc-100 animate-fade-in">
+          <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-zinc-100">
             <div className="px-6 py-4 flex flex-col gap-4">
-              <a href="#why" onClick={() => setMobileMenuOpen(false)} className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-                왜 김해나
-              </a>
-              <a href="#courses" onClick={() => setMobileMenuOpen(false)} className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-                수업 종류
-              </a>
-              <a href="#instructor" onClick={() => setMobileMenuOpen(false)} className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-                강사 소개
-              </a>
-              <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-                상담
-              </a>
+              {[
+                { href: "#why", label: "차별점" },
+                { href: "#courses", label: "수업 안내" },
+                { href: "#instructor", label: "강사 소개" },
+                { href: "#diagnose", label: "영어 진단" },
+              ].map((m) => (
+                <a key={m.href} href={m.href} onClick={() => setMobileMenuOpen(false)} className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
+                  {m.label}
+                </a>
+              ))}
               <a
                 href={KAKAO_CHANNEL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-semibold text-white bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] px-5 py-2.5 rounded-full text-center"
               >
-                무료 상담
+                상담
               </a>
             </div>
           </div>
         )}
       </nav>
 
-      {/* ===== HERO ===== */}
+      {/* ===========================================================
+          1. HERO — 변경안 A
+          =========================================================== */}
       <section className="relative h-[100vh] overflow-hidden bg-white">
-        {/* Left Circle */}
         <div
           ref={leftCircleRef}
           className="absolute top-[-30%] left-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none transition-transform duration-100 will-change-transform"
         >
           <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF5C39] via-[#FF6B4A] to-[#FF7A5C] shadow-2xl" />
         </div>
-
-        {/* Right Circle */}
         <div
           ref={rightCircleRef}
           className="absolute top-[-30%] right-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none transition-transform duration-100 will-change-transform"
@@ -316,81 +295,79 @@ export default function Home() {
           <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF6B4A] via-[#FF7A5C] to-[#FF8A6C] shadow-2xl" />
         </div>
 
-        {/* Hero Content */}
         <div
           ref={heroContentRef}
-          className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center will-change-[opacity] transition-opacity duration-100"
+          className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center will-change-[opacity] transition-opacity duration-100"
         >
           <div className="animate-fade-in-up">
-            <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6 font-medium tracking-[0.15em]">
-              ★ 5.0 &nbsp;·&nbsp; 9년 &nbsp;·&nbsp; 후기 30건+
-            </p>
-
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-gray-800 mb-4 sm:mb-6 leading-tight">
-              영어로 일하시는 분을 위한
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 sm:mb-8 leading-[1.15] tracking-tight">
+              대표의 영어,
               <br />
               <span className="bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] bg-clip-text text-transparent">
-                1:1 영어
+                1:1로 가르칩니다.
               </span>
             </h1>
 
-            <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-12 max-w-2xl mx-auto animate-fade-in-up animation-delay-200 leading-relaxed">
-              임원·의사·파일럿과 일해온 9년.
+            <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
+              9년차 비즈니스 영어 1위 강사 김해나가
               <br className="hidden sm:block" />
-              같은 수업은 두 번 만들지 않습니다.
+              {" "}당신만을 위한 커리큘럼을 설계합니다.
             </p>
 
-            <div className="animate-fade-in-up animation-delay-300 flex flex-col sm:flex-row gap-3 justify-center">
+            {/* 신뢰 배지 — 한 줄, 작게 */}
+            <p className="text-xs sm:text-sm text-gray-500 mb-10 sm:mb-12 tracking-[0.12em]">
+              비즈니스 영어 1위 &nbsp;·&nbsp; 9년차 &nbsp;·&nbsp; 별점 5.0 &nbsp;·&nbsp; OPIc AL
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
-                href="#contact"
-                className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold cursor-pointer"
+                href="#diagnose"
+                className="inline-block text-base sm:text-lg px-9 py-4 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all font-semibold"
               >
-                무료 진단 받기 (5분)
+                무료 영어 진단 받기
               </a>
               <a
-                href={KAKAO_CHANNEL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-white text-gray-800 border-2 border-gray-200 hover:border-[#FF5C39] hover:text-[#FF5C39] shadow-xl hover:scale-105 transition-all font-bold cursor-pointer"
+                href="#courses"
+                className="inline-block text-base sm:text-lg px-9 py-4 rounded-full bg-white text-gray-800 border border-gray-200 hover:border-[#FF5C39] hover:text-[#FF5C39] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all font-semibold"
               >
-                💬 카톡으로 상담
+                수업 안내 보기
               </a>
             </div>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-600 z-20 animate-scroll-bounce">
-          <div className="text-sm mb-2 text-center">스크롤하세요</div>
-          <div className="w-6 h-10 border-2 border-gray-600 rounded-full mx-auto flex justify-center">
-            <div className="w-1.5 h-3 bg-gray-600 rounded-full mt-2 animate-scroll-dot" />
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-500 z-20 animate-scroll-bounce">
+          <div className="text-xs mb-2 text-center tracking-[0.2em]">SCROLL</div>
+          <div className="w-6 h-10 border-2 border-gray-400 rounded-full mx-auto flex justify-center">
+            <div className="w-1.5 h-3 bg-gray-400 rounded-full mt-2 animate-scroll-dot" />
           </div>
         </div>
       </section>
 
-      {/* ===== WHY 김해나 ===== */}
-      <section id="why" className="relative py-16 sm:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-orange-50/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-on-scroll text-center mb-20">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="text-[#FF5C39]">김해나</span> 수업이 다른 점
+      {/* ===========================================================
+          2. SOCIAL PROOF — 누가 배우고 있나
+          =========================================================== */}
+      <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-white border-b border-zinc-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-on-scroll text-center mb-14">
+            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
+              지금, 이런 분들이 배우고 있습니다.
             </h2>
-            <p className="text-lg sm:text-xl text-zinc-500">
-              가격이 비슷한 1:1 과외와 무엇이 다른가
+            <p className="text-sm sm:text-base text-zinc-500">
+              매일 영어가 필요한 30+명의 전문직이 1:1로 배우고 있습니다.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {whyEngzCards.map((card, index) => (
-              <div key={card.title} className={`animate-on-scroll animation-delay-${(index + 1) * 100} group`}>
-                <div className="h-full border-0 shadow-2xl rounded-[40px] overflow-hidden bg-white hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-2.5">
-                  <div className="p-10">
-                    <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-6 shadow-lg`}>
-                      {card.icon}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-4">{card.title}</h3>
-                    <p className="text-zinc-500 text-lg leading-relaxed">{card.description}</p>
-                  </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {studentTypes.map((s, i) => (
+              <div
+                key={s.label}
+                className={`animate-on-scroll-scale animation-delay-${(i % 5) * 100} group`}
+              >
+                <div className="aspect-square rounded-2xl border border-zinc-200 bg-white flex items-center justify-center text-center transition-all hover:border-[#FF5C39] hover:shadow-lg hover:-translate-y-0.5">
+                  <span className="text-base sm:text-lg font-semibold text-gray-800 group-hover:text-[#FF5C39] transition-colors">
+                    {s.label}
+                  </span>
                 </div>
               </div>
             ))}
@@ -398,466 +375,385 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== COURSES / FEATURES GRID ===== */}
-      <section id="courses" className="py-16 sm:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-orange-50/30 to-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-on-scroll text-center mb-20">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              목표에 맞춰 <span className="text-[#FF5C39]">설계된 1:1 코스</span>
-            </h2>
-            <p className="text-lg sm:text-xl text-zinc-500">
-              어떤 일을 하느냐, 어디서 영어가 막히느냐에 따라 시작점이 다릅니다
+      {/* ===========================================================
+          3. WHY — 차별점 3가지
+          =========================================================== */}
+      <section id="why" className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-orange-50/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-on-scroll text-center mb-16 sm:mb-20">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+              Why 김해나
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuresGrid.map((feature, index) => (
-              <div key={feature.title} className={`animate-on-scroll-scale animation-delay-${(index % 3) * 100}`}>
-                <div className="border-2 border-orange-100 hover:border-[#FF5C39] transition-all duration-300 hover:shadow-xl rounded-[30px] overflow-hidden group h-full hover:-translate-y-1">
-                  <div className="bg-gradient-to-br from-orange-50 to-white p-6 pb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF5C39] to-[#FF7A5C] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-bold mb-1">{feature.title}</h3>
-                    <p className="text-zinc-500 text-base">{feature.description}</p>
-                  </div>
-                  <div className="px-6 pb-6 pt-4">
-                    <ul className="space-y-3">
-                      {feature.features.map((item) => (
-                        <li key={item} className="flex items-start gap-2">
-                          <svg className="w-5 h-5 text-[#FF5C39] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-sm text-zinc-700">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== INSTRUCTOR (김해나 about) ===== */}
-      <section id="instructor" className="py-16 sm:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-orange-50/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-on-scroll text-center mb-20">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="text-[#FF5C39]">9년</span> 동안 한 사람의 영어를 본 사람
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">
+              가격이 비슷한 1:1 과외와<br className="sm:hidden" /> 무엇이 다른가.
             </h2>
-            <p className="text-lg sm:text-xl text-zinc-500">
-              30명 이상의 임원·의사·전문직을 영어로 일하게 만들었습니다
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-            {/* Left Card — 강사 프로필 (사진) */}
-            <div className="animate-on-scroll-left">
-              <div className="border-0 shadow-2xl rounded-[40px] overflow-hidden bg-gradient-to-br from-orange-50 to-white">
-                <div className="grid sm:grid-cols-[180px_1fr] gap-6 p-8 sm:p-10 items-center">
-                  <div className="relative aspect-[3/4] sm:aspect-square rounded-3xl overflow-hidden shadow-lg ring-4 ring-white">
-                    <Image
-                      src="/profile.jpg"
-                      alt="김해나 강사"
-                      fill
-                      sizes="(min-width: 640px) 180px, 100vw"
-                      className="object-cover"
-                      priority
-                    />
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {whyEngzCards.map((card, i) => (
+              <div key={card.badge} className={`animate-on-scroll animation-delay-${(i + 1) * 100}`}>
+                <div className="h-full rounded-3xl bg-white border border-zinc-100 p-8 sm:p-10 transition-all hover:border-[#FF5C39] hover:shadow-2xl hover:-translate-y-2">
+                  <div className="text-sm font-bold text-[#FF5C39] tracking-[0.2em] mb-5">
+                    {card.badge}
                   </div>
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold mb-2">김해나</h3>
-                    <p className="text-sm text-[#FF5C39] font-semibold mb-4">
-                      9년차 1:1 영어 과외 · ENGZ 대표
-                    </p>
-                    <ul className="space-y-2.5">
-                      {haenaCredentials.map((item) => (
-                        <li key={item} className="flex items-start gap-2.5">
-                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FF5C39] to-[#FF7A5C] flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <CheckIcon className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="text-sm text-zinc-700">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Card — 자체 시스템 */}
-            <div className="animate-on-scroll-right">
-              <div className="border-0 shadow-2xl rounded-[40px] overflow-hidden bg-gradient-to-br from-orange-50 to-white">
-                <div className="p-10">
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#FF7A5C] to-[#FF8A6C] flex items-center justify-center mb-6 shadow-lg">
-                    <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-3xl font-bold mb-4">AI가 보조하는 1:1 수업</h3>
-                  <p className="text-zinc-500 text-lg leading-relaxed mb-6">
-                    9년의 수업 데이터가 시스템에 들어 있습니다. 강사는 가르치는 일에 집중하고, 나머지는 시스템이 합니다.
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900 leading-snug">
+                    {card.title}
+                  </h3>
+                  <p className="text-zinc-600 leading-relaxed text-sm sm:text-base">
+                    {card.description}
                   </p>
-                  <ul className="space-y-3">
-                    {aiSystemFeatures.map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF5C39] to-[#FF7A5C] flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <CheckIcon className="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span className="text-base text-zinc-700">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================================================
+          4. COURSES — 수업 종류
+          =========================================================== */}
+      <section id="courses" className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-on-scroll text-center mb-16 sm:mb-20">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+              Courses
+            </p>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">
+              당신의 영어, 어떤 영어인가요?
+            </h2>
           </div>
 
-          <div className="animate-on-scroll text-center">
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {courses.map((c, i) => (
+              <div key={c.title} className={`animate-on-scroll-scale animation-delay-${(i % 3) * 100}`}>
+                <div className="h-full rounded-3xl border border-zinc-200 bg-white transition-all hover:border-[#FF5C39] hover:shadow-2xl hover:-translate-y-1 flex flex-col">
+                  <div className="p-8 sm:p-10 flex-1">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-[#FF5C39] font-semibold mb-3">
+                      {c.subtitle}
+                    </p>
+                    <h3 className="text-2xl font-bold mb-2 text-gray-900">{c.title}</h3>
+                    <p className="text-sm text-zinc-500 mb-7">{c.audience}</p>
+
+                    <div className="border-t border-zinc-100 pt-6">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+                        핵심 커리큘럼
+                      </p>
+                      <ul className="space-y-2.5">
+                        {c.items.map((item) => (
+                          <li key={item} className="flex items-start gap-2.5 text-sm text-zinc-700">
+                            <span className="mt-2 h-1 w-1 rounded-full bg-[#FF5C39] flex-shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-zinc-100 px-8 sm:px-10 py-6 grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <p className="text-zinc-400 mb-1">기간</p>
+                      <p className="font-semibold text-gray-800">{c.duration}</p>
+                    </div>
+                    <div>
+                      <p className="text-zinc-400 mb-1">가격</p>
+                      <p className="font-semibold text-gray-800">{c.price}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="animate-on-scroll text-center mt-12">
             <a
-              href="#contact"
-              className="inline-block text-lg sm:text-xl px-12 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold"
+              href="#diagnose"
+              className="inline-block text-base px-8 py-3.5 rounded-full bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg transition-all font-semibold"
             >
-              나에게 맞는 코스 진단 받기 (무료)
+              나에게 맞는 코스 진단 받기
             </a>
           </div>
         </div>
       </section>
 
-      {/* ===== BIG CTA ===== */}
-      <section className="relative py-16 sm:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FF5C39] via-[#FF6B4A] to-[#FF7A5C]" />
+      {/* ===========================================================
+          5. TESTIMONIALS — 수강생 후기
+          =========================================================== */}
+      <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-orange-50/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-on-scroll text-center mb-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+              Reviews
+            </p>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-4">
+              별점 5.0, 30+개의 후기.
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-500">
+              실제 수강생들이 남긴 9년의 평가입니다.
+            </p>
+          </div>
 
-        <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <figure
+                key={i}
+                className={`animate-on-scroll-scale animation-delay-${(i % 3) * 100} rounded-3xl border border-zinc-100 bg-white p-7 transition-all hover:border-[#FF5C39] hover:shadow-lg`}
+              >
+                <div className="text-[#FF5C39] text-lg mb-4 tracking-tight">★★★★★</div>
+                <blockquote className="text-sm text-zinc-700 leading-relaxed mb-6">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <figcaption className="border-t border-zinc-100 pt-4 text-xs text-zinc-500">
+                  <span className="font-semibold text-gray-900">{t.name}</span>
+                  <span className="mx-2 text-zinc-300">·</span>
+                  {t.role}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <p className="mt-10 text-center text-[11px] text-zinc-400">
+            ※ 실제 수강생 후기 — 자료 받는 즉시 교체
+          </p>
+        </div>
+      </section>
+
+      {/* ===========================================================
+          6. INSTRUCTOR — 강사 소개 (김해나)
+          =========================================================== */}
+      <section id="instructor" className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-[2fr_3fr] gap-10 lg:gap-16 items-start">
+            {/* 왼쪽: 사진 */}
+            <div className="animate-on-scroll-left">
+              <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl ring-1 ring-zinc-100">
+                <Image
+                  src="/profile.jpg"
+                  alt="김해나 강사"
+                  fill
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* 오른쪽: 약력 + 소개 */}
+            <div className="animate-on-scroll-right">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+                Instructor
+              </p>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 tracking-tight">
+                김해나
+              </h2>
+              <p className="text-sm text-zinc-500 mb-8">1:1 프리미엄 영어 강사</p>
+
+              <p className="text-lg sm:text-xl font-semibold text-gray-800 leading-relaxed mb-10 italic">
+                &ldquo;공학 전공 출신으로,<br />
+                영어를 &lsquo;체계&rsquo;로 가르칩니다.&rdquo;
+              </p>
+
+              {/* 약력 */}
+              <div className="mb-10">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-4">
+                  Profile
+                </p>
+                <ul className="space-y-2.5">
+                  {haenaCredentials.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-zinc-700">
+                      <span className="mt-2 h-1 w-1 rounded-full bg-[#FF5C39] flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* 자기 소개 */}
+              <div className="space-y-4 text-sm sm:text-base text-zinc-700 leading-relaxed border-t border-zinc-100 pt-8">
+                <p>
+                  저는 9년 동안 1:1로 영어를 가르쳐 왔습니다.
+                </p>
+                <p>
+                  영어를 잘하는 강사는 많습니다. 하지만 영어를 <b>&lsquo;잘 가르치는&rsquo;</b> 것은 다른 일입니다.
+                </p>
+                <p>
+                  공학을 전공한 저는, 영어를 감이 아닌 시스템으로 접근합니다.
+                  직접 개발한 학습 시스템이 그 결과입니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================================================
+          7. DIAGNOSE — 무료 영어 레벨 진단
+          =========================================================== */}
+      <section
+        id="diagnose"
+        className="relative py-20 sm:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FF5C39] via-[#FF6B4A] to-[#FF7A5C]" />
+        <div className="absolute inset-0 overflow-hidden opacity-15 pointer-events-none">
           <div className="absolute top-20 right-20 w-96 h-96 rounded-full bg-white blur-3xl animate-blob-1" />
           <div className="absolute bottom-20 left-20 w-[500px] h-[500px] rounded-full bg-orange-200 blur-3xl animate-blob-2" />
         </div>
 
-        <div className="relative max-w-5xl mx-auto text-center text-white">
-          <div className="animate-on-scroll">
-            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6">
-              5분이면, 영어가
-              <br />
-              어디서 막혀 있는지 보입니다
+        <div className="relative max-w-3xl mx-auto">
+          <div className="animate-on-scroll text-center text-white mb-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80 mb-3">
+              Free Diagnosis
+            </p>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
+              5분 만에, 내 영어 레벨을 알아보세요.
             </h2>
-            <p className="text-lg sm:text-2xl mb-8 sm:mb-12 text-white/90">
-              9년치 학습 데이터로 진단합니다.
+            <p className="text-sm sm:text-base text-white/90 leading-relaxed">
+              간단한 진단 후, 김해나 강사가 직접
               <br className="hidden sm:block" />
-              결과와 맞춤 커리큘럼 초안을 카톡으로 받으세요.
+              {" "}당신의 학습 방향을 카톡으로 제안해드립니다.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="#contact"
-                className="w-full sm:w-auto inline-block text-base sm:text-xl px-8 py-4 sm:py-5 rounded-full bg-white text-gray-900 shadow-2xl hover:scale-105 transition-all font-bold text-center"
+          </div>
+
+          <div className="rounded-3xl bg-white shadow-2xl p-7 sm:p-10">
+            <form onSubmit={handleContactSubmit} className="space-y-5">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+                    이름
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="홍길동"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+                    이메일
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="example@email.com"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+                  현재 영어 수준 / 학습 목표
+                </label>
+                <textarea
+                  required
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                  placeholder="예) 기업 임원이고 글로벌 미팅에서 자신감 있게 발표하고 싶습니다. 토익 800점대지만 회화는 자신 없습니다."
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition resize-none"
+                />
+                <p className="mt-1.5 text-xs text-zinc-400">
+                  구체적일수록 정확한 진단을 보내드릴 수 있습니다.
+                </p>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] hover:opacity-90 text-white font-semibold px-8 py-4 rounded-xl text-sm transition shadow-md"
               >
-                무료 진단 받기
-              </a>
+                {sent ? "메일 앱이 열렸습니다" : "무료 진단 신청하기"}
+              </button>
+              <p className="text-center text-[11px] text-zinc-400">
+                imhen97@eng-z.com 으로 전송 · 24시간 안에 카톡으로 답장
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================================================
+          8. FAQ + 하단 CTA
+          =========================================================== */}
+      <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <div className="animate-on-scroll text-center mb-14">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+              FAQ
+            </p>
+            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 tracking-tight">
+              자주 묻는 질문
+            </h2>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-100 divide-y divide-zinc-100 bg-zinc-50/30 mb-16">
+            {faqs.map((f, i) => (
+              <details key={i} className="group p-6">
+                <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm sm:text-base font-semibold text-gray-900">
+                  <span>Q. {f.q}</span>
+                  <span className="text-[#FF5C39] transition group-open:rotate-45 text-lg leading-none">+</span>
+                </summary>
+                <p className="mt-3 pl-5 text-sm text-zinc-600 leading-relaxed">A. {f.a}</p>
+              </details>
+            ))}
+          </div>
+
+          {/* 하단 CTA */}
+          <div className="text-center">
+            <p className="text-sm text-zinc-500 mb-5">상담을 원하시나요?</p>
+            <div className="grid sm:grid-cols-3 gap-3">
               <a
                 href={KAKAO_CHANNEL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-block text-base sm:text-xl px-8 py-4 sm:py-5 rounded-full border-2 border-white text-white hover:bg-white hover:text-[#FF5C39] shadow-2xl hover:scale-105 transition-all font-bold text-center"
+                className="rounded-2xl border border-zinc-200 bg-white px-5 py-5 text-center transition-all hover:border-[#FF5C39] hover:shadow-md hover:-translate-y-0.5"
               >
-                💬 카톡으로 1:1 상담
+                <p className="text-sm font-semibold text-gray-900 mb-1">💬 카카오톡 상담</p>
+                <p className="text-xs text-zinc-500">@engz_korea</p>
+              </a>
+              <a
+                href="tel:010-7566-2391"
+                className="rounded-2xl border border-zinc-200 bg-white px-5 py-5 text-center transition-all hover:border-[#FF5C39] hover:shadow-md hover:-translate-y-0.5"
+              >
+                <p className="text-sm font-semibold text-gray-900 mb-1">📞 전화 상담</p>
+                <p className="text-xs text-zinc-500">010-7566-2391</p>
+              </a>
+              <a
+                href="mailto:imhen97@eng-z.com"
+                className="rounded-2xl border border-zinc-200 bg-white px-5 py-5 text-center transition-all hover:border-[#FF5C39] hover:shadow-md hover:-translate-y-0.5"
+              >
+                <p className="text-sm font-semibold text-gray-900 mb-1">✉️ 이메일 문의</p>
+                <p className="text-xs text-zinc-500">imhen97@eng-z.com</p>
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== APP DOWNLOAD (수강생 전용) ===== */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="animate-on-scroll">
-            <p className="text-sm text-[#FF5C39] font-semibold mb-2">FOR ENROLLED STUDENTS</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3">수강생 전용 과외노트 앱</h2>
-            <p className="text-zinc-500 mb-10">
-              수업 노트·숙제·복습 자료를 언제든 손에서
-            </p>
-
-            <div className="grid sm:grid-cols-3 gap-6 max-w-2xl mx-auto">
-              <a
-                href="https://app.eng-z.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-6 rounded-2xl border-2 border-zinc-100 hover:border-[#FF5C39] hover:shadow-lg transition-all"
-              >
-                <div className="text-3xl mb-3">🖥️</div>
-                <h3 className="font-bold text-zinc-800 mb-1">데스크톱</h3>
-                <p className="text-xs text-zinc-400 mb-3">Chrome에서 설치</p>
-                <span className="text-xs font-semibold text-[#FF5C39] group-hover:underline">열기 →</span>
-              </a>
-
-              <a
-                href="https://app.eng-z.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-6 rounded-2xl border-2 border-zinc-100 hover:border-[#FF5C39] hover:shadow-lg transition-all"
-              >
-                <div className="text-3xl mb-3">📱</div>
-                <h3 className="font-bold text-zinc-800 mb-1">iPhone / iPad</h3>
-                <p className="text-xs text-zinc-400 mb-3">Safari → 공유 → 홈 화면에 추가</p>
-                <span className="text-xs font-semibold text-[#FF5C39] group-hover:underline">열기 →</span>
-              </a>
-
-              <a
-                href="https://app.eng-z.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-6 rounded-2xl border-2 border-zinc-100 hover:border-[#FF5C39] hover:shadow-lg transition-all"
-              >
-                <div className="text-3xl mb-3">🤖</div>
-                <h3 className="font-bold text-zinc-800 mb-1">Android</h3>
-                <p className="text-xs text-zinc-400 mb-3">Chrome → 설치 배너 자동</p>
-                <span className="text-xs font-semibold text-[#FF5C39] group-hover:underline">열기 →</span>
-              </a>
-            </div>
-
-            <p className="text-xs text-zinc-300 mt-8">
-              앱 스토어 없이 브라우저에서 바로 설치 · 자동 업데이트 · 무료
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== CONTACT / 무료 상담 ===== */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="animate-on-scroll">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-center">먼저 짧게 이야기해봐요</h2>
-            <p className="text-zinc-500 text-center mb-10">
-              현재 영어 수준과 목표만 알려주시면, 1:1 맞춤 커리큘럼 초안을 카톡으로 보내드립니다
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-4 mb-10">
-              <div className="rounded-3xl border-2 border-zinc-100 hover:border-[#FF5C39] transition-all bg-white">
-                <div className="pt-6 pb-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-[#FF5C39]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold mb-1">전화 상담</h3>
-                  <a href="tel:010-7566-2391" className="text-sm text-zinc-500 hover:text-[#FF5C39] transition-colors">
-                    010-7566-2391
-                  </a>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border-2 border-zinc-100 hover:border-[#FF5C39] transition-all bg-white">
-                <div className="pt-6 pb-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-[#FF5C39]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold mb-1">이메일</h3>
-                  <a href="mailto:imhen97@eng-z.com" className="text-sm text-zinc-500 hover:text-[#FF5C39] transition-colors">
-                    imhen97@eng-z.com
-                  </a>
-                </div>
-              </div>
-
-              <a
-                href={KAKAO_CHANNEL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-3xl border-2 border-zinc-100 hover:border-[#FF5C39] transition-all bg-white block"
-              >
-                <div className="pt-6 pb-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-[#FF5C39]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold mb-1">카카오톡</h3>
-                  <p className="text-sm text-zinc-500">@engz_korea</p>
-                </div>
-              </a>
-            </div>
-
-            <div className="rounded-3xl border-2 border-orange-100 bg-white shadow-lg">
-              <div className="p-6 sm:p-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF5C39] to-[#FF7A5C] flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">무료 진단 신청</h3>
-                    <p className="text-sm text-zinc-500">imhen97@eng-z.com 으로 보내집니다 · 24시간 안에 카톡으로 답장</p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleContactSubmit} className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
-                      <input
-                        type="text"
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="홍길동"
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">이메일 (답장 받을 주소)</label>
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="example@email.com"
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      현재 영어 수준 / 학습 목표
-                    </label>
-                    <textarea
-                      required
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      rows={4}
-                      placeholder="예) 기업 임원이고 글로벌 미팅에서 자신감 있게 발표하고 싶어요. 토익 800점대지만 회화는 자신 없습니다."
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition resize-none"
-                    />
-                    <p className="mt-1.5 text-xs text-zinc-400">
-                      구체적일수록 정확한 진단을 보내드릴 수 있어요.
-                    </p>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] hover:opacity-90 text-white font-semibold px-8 py-3 rounded-xl text-sm transition"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                    {sent ? "메일 앱이 열렸습니다" : "무료 진단 신청하기"}
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FOOTER ===== */}
+      {/* ===========================================================
+          FOOTER
+          =========================================================== */}
       <footer className="border-t border-zinc-100 py-10 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto text-center text-zinc-500 space-y-1 text-sm">
-          <p className="font-medium text-gray-700">ENGZ — 김해나 1:1 프리미엄 영어</p>
-          <p>&copy; 2026 ENGZ. All rights reserved.</p>
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
+          <div className="text-center sm:text-left">
+            <p className="font-semibold text-gray-700">ENGZ — 김해나 1:1 프리미엄 영어</p>
+            <p className="mt-0.5 text-[11px] text-zinc-400">
+              &copy; 2026 ENGZ. All rights reserved.
+            </p>
+          </div>
+          <div className="flex items-center gap-5 text-xs">
+            <a
+              href={APP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-500 hover:text-[#FF5C39] transition"
+            >
+              수강생 전용 앱 →
+            </a>
+          </div>
         </div>
       </footer>
-
-      {/* ===== INSTALL MODAL (수강생 전용) ===== */}
-      {showInstallModal && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onClick={() => setShowInstallModal(false)}
-        >
-          <div
-            className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowInstallModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF5C39] to-[#FF7A5C] flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
-                E
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900">과외노트 앱 설치</h3>
-              <p className="text-gray-500 mt-2 text-sm">홈 화면에 추가하면 앱처럼 사용할 수 있어요</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">🖥️</span>
-                  <span className="font-semibold text-gray-800 text-sm">Chrome / Edge (PC)</span>
-                </div>
-                <ol className="text-sm text-gray-600 space-y-1 ml-7 list-decimal">
-                  <li>
-                    <a href="https://app.eng-z.com" target="_blank" rel="noopener" className="text-[#FF5C39] underline font-medium">
-                      app.eng-z.com
-                    </a>{" "}
-                    접속
-                  </li>
-                  <li>
-                    주소창 오른쪽 <span className="font-medium">설치 아이콘 (⊕)</span> 클릭
-                  </li>
-                  <li>&quot;설치&quot; 버튼 클릭하면 완료!</li>
-                </ol>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">📱</span>
-                  <span className="font-semibold text-gray-800 text-sm">iPhone / iPad (Safari)</span>
-                </div>
-                <ol className="text-sm text-gray-600 space-y-1 ml-7 list-decimal">
-                  <li>
-                    Safari로{" "}
-                    <a href="https://app.eng-z.com" target="_blank" rel="noopener" className="text-[#FF5C39] underline font-medium">
-                      app.eng-z.com
-                    </a>{" "}
-                    접속
-                  </li>
-                  <li>
-                    하단 <span className="font-medium">공유 버튼 (↑)</span> 탭
-                  </li>
-                  <li>&quot;홈 화면에 추가&quot; 선택</li>
-                </ol>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">🤖</span>
-                  <span className="font-semibold text-gray-800 text-sm">Android (Chrome)</span>
-                </div>
-                <ol className="text-sm text-gray-600 space-y-1 ml-7 list-decimal">
-                  <li>
-                    Chrome으로{" "}
-                    <a href="https://app.eng-z.com" target="_blank" rel="noopener" className="text-[#FF5C39] underline font-medium">
-                      app.eng-z.com
-                    </a>{" "}
-                    접속
-                  </li>
-                  <li>
-                    상단 <span className="font-medium">⋮ 메뉴</span> &rarr; &quot;앱 설치&quot;
-                  </li>
-                  <li>&quot;설치&quot; 탭하면 완료!</li>
-                </ol>
-              </div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <a
-                href="https://app.eng-z.com"
-                target="_blank"
-                rel="noopener"
-                className="inline-block text-sm text-gray-400 hover:text-[#FF5C39] transition underline"
-              >
-                웹 브라우저로 바로 열기
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
