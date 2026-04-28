@@ -23,9 +23,9 @@ const whyEngzCards = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
     ),
-    title: "자체 개발 AI 수업 시스템",
+    title: "한 사람을 위한 한 수업",
     description:
-      "수업 전 자동으로 학습자에 맞는 커리큘럼·교안·숙제·복습 자료가 생성됩니다. 체계적 학생·숙제·진도 관리는 기본.",
+      "CEO에겐 협상 영어, 의사에겐 학회 영어. 같은 수업을 두 번 받는 분이 없습니다.",
     gradient: "from-red-500 to-orange-500",
   },
   {
@@ -34,9 +34,9 @@ const whyEngzCards = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
-    title: "당신만의 1:1 커리큘럼",
+    title: "수업이 시작되기 전에 끝나 있는 준비",
     description:
-      "직군·영어 수준·목표가 다르면 매 수업이 다릅니다. CEO에겐 협상 영어, 의사에겐 학회 영어 — 한 사람도 같은 수업을 받지 않습니다.",
+      "9년치 학습 데이터를 분석해 다음 수업 자료가 자동으로 만들어져 있습니다. 강사는 가르치는 일에만, 시스템이 나머지를 합니다.",
     gradient: "from-orange-500 to-amber-500",
   },
   {
@@ -45,9 +45,9 @@ const whyEngzCards = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
       </svg>
     ),
-    title: "9년 누적 데이터의 노하우",
+    title: "검증된 9년",
     description:
-      "9년 동안 30+개 별점 5.0 후기, 비즈니스 영어 1위. 데이터로 검증된 학습 설계입니다.",
+      "별점 5.0의 후기 30건 이상, 국내 주요 과외 플랫폼 비즈니스 영어 1위. 자랑이 아니라 결과입니다.",
     gradient: "from-amber-500 to-yellow-500",
   },
 ];
@@ -60,8 +60,8 @@ const featuresGrid = [
       </svg>
     ),
     title: "비즈니스 영어",
-    description: "대표·임원·컨설턴트를 위한 협상·미팅 영어",
-    features: ["협상·프레젠테이션", "비즈니스 이메일", "임원 인터뷰 시뮬"],
+    description: "임원·대표·컨설턴트를 위한 실전 영어",
+    features: ["협상·미팅 시뮬레이션", "이메일·보고서 첨삭", "글로벌 발표 준비"],
   },
   {
     icon: (
@@ -70,8 +70,8 @@ const featuresGrid = [
       </svg>
     ),
     title: "OPIc · IELTS",
-    description: "시험 준비·유학 준비를 위한 1:1 집중 코스",
-    features: ["시험 전략 + 실력 향상", "1:1 모의테스트", "AL · 7.0+ 목표"],
+    description: "시험과 실력을 한 번에 끌어올리는 코스",
+    features: ["기출 패턴 분석", "1:1 스피킹 훈련", "AL · 7.0+ 합격 전략"],
   },
   {
     icon: (
@@ -80,8 +80,8 @@ const featuresGrid = [
       </svg>
     ),
     title: "영어회화",
-    description: "전문직 일상 영어, 네트워킹·여행·문화",
-    features: ["네이티브 톤 발음", "상황별 표현", "문화·뉘앙스 가이드"],
+    description: "일상이 영어인 전문직을 위한 회화",
+    features: ["네트워킹·소셜 영어", "출장·여행 시뮬레이션", "문화 코드와 뉘앙스"],
   },
   {
     icon: (
@@ -89,9 +89,9 @@ const featuresGrid = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
     ),
-    title: "AI 맞춤 커리큘럼",
-    description: "직군·수준·목표에 맞춰 매 수업 자동 생성",
-    features: ["개인별 단어장", "맞춤 교안", "복습 자료 자동 생성"],
+    title: "매 수업 다시 짜는 커리큘럼",
+    description: "9년치 학습 데이터로 한 사람씩 설계",
+    features: ["직군별 표현 큐레이션", "지난 수업 약점 자동 보완", "오늘 가져갈 수업만 정확히"],
   },
   {
     icon: (
@@ -99,9 +99,9 @@ const featuresGrid = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
       </svg>
     ),
-    title: "체계적 진도 관리",
-    description: "수업·숙제·복습이 자동 추적되는 학습 시스템",
-    features: ["주간 학습 리포트", "표현 누적 그래프", "교정 추이 분석"],
+    title: "잊혀지지 않는 학습",
+    description: "수업·숙제·복습이 시스템 안에서 이어집니다",
+    features: ["매주 학습 리포트", "오늘 배운 표현 자동 복습", "교정 이력 한눈에"],
   },
   {
     icon: (
@@ -109,24 +109,24 @@ const featuresGrid = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
       </svg>
     ),
-    title: "1:1 화상 수업",
-    description: "위치·시차 무관, 어디서든 프리미엄 수업",
-    features: ["고화질 화상 통화", "수업 보드 동시 편집", "녹화·복습 가능"],
+    title: "어디서든 같은 퀄리티",
+    description: "출장·해외 거주 중에도 끊김 없이",
+    features: ["화상 + 수업 보드 동시 편집", "자동 녹화·다시 보기", "위치·시차 무관"],
   },
 ];
 
 const haenaCredentials = [
-  "강의 경력 9년차 (대학 재학 시절부터)",
-  "비즈니스 영어 1위 (국내 주요 과외 플랫폼)",
-  "별점 5.0 · 후기 30+건",
+  "9년차 1:1 영어 강사",
+  "비즈니스 영어 분야 1위 (국내 주요 과외 플랫폼)",
+  "별점 5.0 / 후기 30건+",
   "OPIc AL · TOEIC 975 · 동국대 화공생물공학과",
 ];
 
 const aiSystemFeatures = [
-  "수업 전 자동 커리큘럼·교안 생성",
-  "학생별 단어장·복습 자료 자동 관리",
-  "표현·교정 누적 데이터 시각화",
-  "숙제 부여·자동 채점·피드백",
+  "수업 자료 자동 생성 (커리큘럼·교안·숙제)",
+  "표현·교정·진도 실시간 추적",
+  "학습자 약점 자동 분석·복습",
+  "어디서든 동일한 학습 환경",
 ];
 
 function CheckIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -322,22 +322,22 @@ export default function Home() {
           className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center will-change-[opacity] transition-opacity duration-100"
         >
           <div className="animate-fade-in-up">
-            <p className="text-base sm:text-lg text-gray-700 mb-3 sm:mb-4 font-semibold">
-              ✨ 9년차 비즈니스 영어 1위 강사
+            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 font-medium tracking-wide">
+              ⭐ 별점 5.0 · 9년 · 후기 30건+
             </p>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-gray-800 mb-4 sm:mb-6 leading-tight">
-              대표님 영어,
+              영어가 일이 되는 분을 위한
               <br />
               <span className="bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] bg-clip-text text-transparent">
-                9년차 1위 강사
+                1:1 프리미엄 영어
               </span>
-              가
-              <br className="sm:hidden" /> 직접 가르칩니다
             </h1>
 
             <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-12 max-w-2xl mx-auto animate-fade-in-up animation-delay-200">
-              자체 개발 AI 수업 시스템으로, 당신만을 위한 영어 커리큘럼.
+              임원·의사·파일럿이 영어로 일할 수 있게 해온 9년.
+              <br className="hidden sm:block" />
+              매 수업, 당신만을 위한 커리큘럼이 다시 짜입니다.
             </p>
 
             <div className="animate-fade-in-up animation-delay-300 flex flex-col sm:flex-row gap-3 justify-center">
@@ -345,7 +345,7 @@ export default function Home() {
                 href="#contact"
                 className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold cursor-pointer"
               >
-                무료 영어 레벨 진단 받기 →
+                무료 진단 받기 (5분)
               </a>
               <a
                 href={KAKAO_CHANNEL}
@@ -353,7 +353,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-block text-lg sm:text-xl px-10 py-4 sm:py-5 rounded-full bg-white text-gray-800 border-2 border-gray-200 hover:border-[#FF5C39] hover:text-[#FF5C39] shadow-xl hover:scale-105 transition-all font-bold cursor-pointer"
               >
-                💬 카톡 상담
+                💬 카톡으로 상담
               </a>
             </div>
           </div>
@@ -373,10 +373,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="animate-on-scroll text-center mb-20">
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="text-[#FF5C39]">김해나</span> 수업이 다른 이유
+              <span className="text-[#FF5C39]">김해나</span> 수업이 다른 점
             </h2>
             <p className="text-lg sm:text-xl text-zinc-500">
-              일반 1:1 영어 과외와 차원이 다른 학습 경험
+              가격이 비슷한 1:1 과외와 무엇이 다른가
             </p>
           </div>
 
@@ -403,10 +403,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="animate-on-scroll text-center mb-20">
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              목표에 맞는 <span className="text-[#FF5C39]">1:1 코스</span>
+              목표에 맞춰 <span className="text-[#FF5C39]">설계된 1:1 코스</span>
             </h2>
             <p className="text-lg sm:text-xl text-zinc-500">
-              직군·수준·목표에 맞춰 매 수업이 다릅니다
+              어떤 일을 하느냐, 어디서 영어가 막히느냐에 따라 시작점이 다릅니다
             </p>
           </div>
 
@@ -445,10 +445,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="animate-on-scroll text-center mb-20">
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              <span className="text-[#FF5C39]">9년</span>의 신뢰
+              <span className="text-[#FF5C39]">9년</span> 동안 한 사람의 영어를 본 사람
             </h2>
             <p className="text-lg sm:text-xl text-zinc-500">
-              한 사람, 한 사람의 영어를 책임져 온 9년
+              30명 이상의 임원·의사·전문직을 영어로 일하게 만들었습니다
             </p>
           </div>
 
@@ -496,9 +496,9 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
-                  <h3 className="text-3xl font-bold mb-4">자체 AI 수업 시스템</h3>
+                  <h3 className="text-3xl font-bold mb-4">AI가 보조하는 1:1 수업</h3>
                   <p className="text-zinc-500 text-lg leading-relaxed mb-6">
-                    9년의 노하우를 시스템에 담았습니다. 한 사람, 한 수업이 자동으로 정리됩니다.
+                    9년의 수업 데이터가 시스템에 들어 있습니다. 강사는 가르치는 일에 집중하고, 나머지는 시스템이 합니다.
                   </p>
                   <ul className="space-y-3">
                     {aiSystemFeatures.map((item) => (
@@ -520,7 +520,7 @@ export default function Home() {
               href="#contact"
               className="inline-block text-lg sm:text-xl px-12 py-4 sm:py-5 rounded-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] text-white hover:from-[#FF6B4A] hover:to-[#FF8A6C] shadow-2xl hover:scale-105 transition-all font-bold"
             >
-              무료 영어 레벨 진단 받기 →
+              나에게 맞는 코스 진단 받기 (무료)
             </a>
           </div>
         </div>
@@ -538,19 +538,21 @@ export default function Home() {
         <div className="relative max-w-5xl mx-auto text-center text-white">
           <div className="animate-on-scroll">
             <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6">
-              내 영어 수준은
+              5분이면, 영어가
               <br />
-              어디쯤일까?
+              어디서 막혀 있는지 보입니다
             </h2>
             <p className="text-lg sm:text-2xl mb-8 sm:mb-12 text-white/90">
-              5분 진단 → 결과 + 1:1 맞춤 커리큘럼 제안을 카톡으로 보내드립니다.
+              9년치 학습 데이터로 진단합니다.
+              <br className="hidden sm:block" />
+              결과와 맞춤 커리큘럼 초안을 카톡으로 받으세요.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="#contact"
                 className="w-full sm:w-auto inline-block text-base sm:text-xl px-8 py-4 sm:py-5 rounded-full bg-white text-gray-900 shadow-2xl hover:scale-105 transition-all font-bold text-center"
               >
-                무료 영어 레벨 진단
+                무료 진단 받기
               </a>
               <a
                 href={KAKAO_CHANNEL}
@@ -558,7 +560,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-block text-base sm:text-xl px-8 py-4 sm:py-5 rounded-full border-2 border-white text-white hover:bg-white hover:text-[#FF5C39] shadow-2xl hover:scale-105 transition-all font-bold text-center"
               >
-                💬 카카오톡 상담
+                💬 카톡으로 1:1 상담
               </a>
             </div>
           </div>
@@ -572,7 +574,7 @@ export default function Home() {
             <p className="text-sm text-[#FF5C39] font-semibold mb-2">FOR ENROLLED STUDENTS</p>
             <h2 className="text-3xl sm:text-4xl font-bold mb-3">수강생 전용 과외노트 앱</h2>
             <p className="text-zinc-500 mb-10">
-              수업 보드·숙제·복습 자료를 어디서든 확인하세요
+              수업 노트·숙제·복습 자료를 언제든 손에서
             </p>
 
             <div className="grid sm:grid-cols-3 gap-6 max-w-2xl mx-auto">
@@ -624,9 +626,9 @@ export default function Home() {
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="animate-on-scroll">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-center">무료 상담 · 영어 레벨 진단</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-center">먼저 짧게 이야기해봐요</h2>
             <p className="text-zinc-500 text-center mb-10">
-              5분 진단 + 1:1 맞춤 커리큘럼 제안을 카톡으로 보내드립니다
+              현재 영어 수준과 목표만 알려주시면, 1:1 맞춤 커리큘럼 초안을 카톡으로 보내드립니다
             </p>
 
             <div className="grid md:grid-cols-3 gap-4 mb-10">
@@ -686,7 +688,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">무료 진단 신청</h3>
-                    <p className="text-sm text-zinc-500">imhen97@eng-z.com 으로 전송됩니다</p>
+                    <p className="text-sm text-zinc-500">imhen97@eng-z.com 으로 보내집니다 · 24시간 안에 카톡으로 답장</p>
                   </div>
                 </div>
 
@@ -727,6 +729,9 @@ export default function Home() {
                       placeholder="예) 기업 임원이고 글로벌 미팅에서 자신감 있게 발표하고 싶어요. 토익 800점대지만 회화는 자신 없습니다."
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C39] focus:border-transparent transition resize-none"
                     />
+                    <p className="mt-1.5 text-xs text-zinc-400">
+                      구체적일수록 정확한 진단을 보내드릴 수 있어요.
+                    </p>
                   </div>
                   <button
                     type="submit"
@@ -747,7 +752,7 @@ export default function Home() {
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-zinc-100 py-10 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto text-center text-zinc-500 space-y-1 text-sm">
-          <p className="font-medium text-gray-700">ENGZ | 대표자: 김해나</p>
+          <p className="font-medium text-gray-700">ENGZ — 김해나 1:1 프리미엄 영어</p>
           <p>&copy; 2026 ENGZ. All rights reserved.</p>
         </div>
       </footer>
