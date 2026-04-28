@@ -6,15 +6,16 @@ import Image from "next/image";
 /* ---------------------------------------------------------------------------
  * eng-z.com — 김해나 1:1 프리미엄 영어 (premium tone v2)
  *
- * 8 섹션 + Footer:
+ * 9 섹션 + Footer:
  *   1. Hero (변경안 A)
  *   2. Social Proof — 누가 배우고 있나
  *   3. 차별점 3가지
- *   4. 수업 종류 3카드
- *   5. 수강생 후기
- *   6. 강사 소개 (김해나)
- *   7. 무료 영어 레벨 진단
- *   8. FAQ + 하단 CTA
+ *   4. 수업 시스템 미리보기 — How It Works (3 steps)
+ *   5. 수업 종류 3카드
+ *   6. 수강생 후기
+ *   7. 강사 소개 (김해나)
+ *   8. 무료 영어 레벨 진단
+ *   9. FAQ + 하단 CTA
  *   Footer
  *
  * 톤: 짧고 단정 / 숫자·사실 / 결과 중심 / 외국어 직역체 금지 / 느낌표·호객 X.
@@ -51,6 +52,30 @@ const whyEngzCards = [
     title: "9년 동안 검증된 결과",
     description:
       "별점 5.0 후기 30+건, 국내 주요 과외 플랫폼 비즈니스 영어 1위. 자랑이 아니라 결과입니다.",
+  },
+];
+
+const systemSteps = [
+  {
+    phase: "수업 전",
+    title: "자동 생성되는 1:1 맞춤 교안",
+    description:
+      "학생의 직무와 목표에 맞춰 수업 자료가 미리 준비됩니다. 9년치 학습 데이터로 검증된 커리큘럼이 매 수업마다 새로 만들어집니다.",
+    image: "/system/curriculum.png",
+  },
+  {
+    phase: "수업 중",
+    title: "1:1 화상 + 실시간 수업 보드",
+    description:
+      "한 화면에서 화상 수업, 실시간 메모, 표현 정리가 동시에 이뤄집니다. 학생이 영어로 표현한 모든 것이 자동으로 정리되어 남습니다.",
+    image: "/system/live.png",
+  },
+  {
+    phase: "수업 후",
+    title: "맞춤 숙제와 복습이 자동으로",
+    description:
+      "수업 내용을 바탕으로 라이팅·리딩·리스닝·단어 숙제가 자동 생성됩니다. 학생은 학습에만, 강사는 가르치는 일에만 집중합니다.",
+    image: "/system/homework.png",
   },
 ];
 
@@ -216,6 +241,9 @@ export default function Home() {
             <a href="#why" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
               차별점
             </a>
+            <a href="#system" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
+              수업 시스템
+            </a>
             <a href="#courses" className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
               수업 안내
             </a>
@@ -257,6 +285,7 @@ export default function Home() {
             <div className="px-6 py-4 flex flex-col gap-4">
               {[
                 { href: "#why", label: "차별점" },
+                { href: "#system", label: "수업 시스템" },
                 { href: "#courses", label: "수업 안내" },
                 { href: "#instructor", label: "강사 소개" },
                 { href: "#diagnose", label: "영어 진단" },
@@ -407,7 +436,82 @@ export default function Home() {
       </section>
 
       {/* ===========================================================
-          4. COURSES — 수업 종류
+          4. SYSTEM — 수업 시스템 미리보기 (How It Works)
+          =========================================================== */}
+      <section id="system" className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-orange-50/30 to-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-on-scroll text-center mb-16 sm:mb-24">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+              How It Works
+            </p>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-4">
+              9년의 노하우가 시스템이 되었습니다.
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-500 leading-relaxed max-w-2xl mx-auto">
+              수업 전 · 수업 중 · 수업 후, 모든 과정이 1:1 맞춤으로 자동 정리됩니다.
+            </p>
+          </div>
+
+          <div className="space-y-20 sm:space-y-28">
+            {systemSteps.map((step, i) => {
+              const reversed = i % 2 === 1;
+              return (
+                <div
+                  key={step.title}
+                  className="grid md:grid-cols-2 gap-8 lg:gap-14 items-center"
+                >
+                  {/* 텍스트 */}
+                  <div
+                    className={`${reversed ? "md:order-2" : ""} ${
+                      reversed ? "animate-on-scroll-right" : "animate-on-scroll-left"
+                    }`}
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5C39] mb-3">
+                      Step {String(i + 1).padStart(2, "0")} &nbsp;·&nbsp; {step.phase}
+                    </p>
+                    <h3 className="text-xl sm:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+
+                  {/* macOS browser frame + 이미지 */}
+                  <div
+                    className={`${reversed ? "md:order-1" : ""} ${
+                      reversed ? "animate-on-scroll-left" : "animate-on-scroll-right"
+                    }`}
+                  >
+                    <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-zinc-100 bg-white">
+                      <div className="flex items-center gap-1.5 px-4 py-3 bg-zinc-100 border-b border-zinc-200">
+                        <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                        <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                        <span className="w-3 h-3 rounded-full bg-[#28C840]" />
+                        <span className="ml-3 text-[10px] text-zinc-400 truncate">
+                          app.eng-z.com
+                        </span>
+                      </div>
+                      <div className="relative aspect-[16/9] bg-zinc-50">
+                        <Image
+                          src={step.image}
+                          alt={step.title}
+                          fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
+                          className="object-cover object-top"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================================================
+          5. COURSES — 수업 종류
           =========================================================== */}
       <section id="courses" className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto">
