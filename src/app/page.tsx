@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /* ---------------------------------------------------------------------------
@@ -178,11 +179,17 @@ export default function Home() {
             </a>
           </div>
 
-          {/* 강사 사진 placeholder */}
+          {/* 강사 미니 카드 */}
           <div className="mt-12 flex items-center gap-4 rounded-2xl border border-orange-100 bg-white/80 p-4 shadow-sm backdrop-blur sm:max-w-md">
-            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF5C39] to-[#FF8562] text-2xl text-white shadow">
-              👩‍🏫
-              {/* TODO: <Image src="/profile.jpg" ... /> 로 교체 */}
+            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full ring-2 ring-[#FF5C39]/30 shadow">
+              <Image
+                src="/profile.jpg"
+                alt="김해나 강사"
+                fill
+                sizes="64px"
+                className="object-cover"
+                priority
+              />
             </div>
             <div className="leading-tight">
               <p className="text-sm font-bold text-zinc-900">김해나</p>
@@ -360,15 +367,17 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-14">
             <div>
-              <div className="aspect-[3/4] rounded-3xl bg-gradient-to-br from-[#FF5C39] via-[#FF8562] to-orange-200 p-1 shadow-md">
-                <div className="flex h-full items-center justify-center rounded-[22px] bg-white text-7xl">
-                  👩‍🏫
-                  {/* TODO: <Image src="/haena.jpg" ... /> 로 교체 */}
+              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-gradient-to-br from-[#FF5C39] via-[#FF8562] to-orange-200 p-1 shadow-md">
+                <div className="relative h-full w-full overflow-hidden rounded-[22px] bg-white">
+                  <Image
+                    src="/profile.jpg"
+                    alt="김해나 강사 프로필"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, 100vw"
+                    className="object-cover"
+                  />
                 </div>
               </div>
-              <p className="mt-3 text-center text-[11px] text-zinc-400">
-                [김해나 강사 프로필 사진 — 자료 받는 즉시 교체]
-              </p>
             </div>
 
             <div>
