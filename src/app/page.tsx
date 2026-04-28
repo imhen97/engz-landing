@@ -322,22 +322,22 @@ export default function Home() {
           className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center will-change-[opacity] transition-opacity duration-100"
         >
           <div className="animate-fade-in-up">
-            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 font-medium tracking-wide">
-              ⭐ 별점 5.0 · 9년 · 후기 30건+
+            <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6 font-medium tracking-[0.15em]">
+              ★ 5.0 &nbsp;·&nbsp; 9년 &nbsp;·&nbsp; 후기 30건+
             </p>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-gray-800 mb-4 sm:mb-6 leading-tight">
-              영어가 일이 되는 분을 위한
+              영어로 일하시는 분을 위한
               <br />
               <span className="bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] bg-clip-text text-transparent">
-                1:1 프리미엄 영어
+                1:1 영어
               </span>
             </h1>
 
-            <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-12 max-w-2xl mx-auto animate-fade-in-up animation-delay-200">
-              임원·의사·파일럿이 영어로 일할 수 있게 해온 9년.
+            <p className="text-base sm:text-xl text-gray-600 mb-8 sm:mb-12 max-w-2xl mx-auto animate-fade-in-up animation-delay-200 leading-relaxed">
+              임원·의사·파일럿과 일해온 9년.
               <br className="hidden sm:block" />
-              매 수업, 당신만을 위한 커리큘럼이 다시 짜입니다.
+              같은 수업은 두 번 만들지 않습니다.
             </p>
 
             <div className="animate-fade-in-up animation-delay-300 flex flex-col sm:flex-row gap-3 justify-center">
