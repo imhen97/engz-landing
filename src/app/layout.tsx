@@ -70,11 +70,15 @@ export const metadata: Metadata = {
       "자체 개발 AI 수업 시스템 + 9년차 검증 강사. 대표·임원·전문직 전용 1:1 프리미엄 영어.",
     images: ["/og-image.png"],
   },
-  // 검색엔진 인증 — 등록 후 실제 코드로 교체.
+  // 검색엔진 인증.
+  // Naver: HTML 파일 방식(naver2150562d9ace8df800e3d6896e1ba82a.html)으로 이미
+  // 인증 완료 — 메타태그로도 이중 검증해서 어느 한쪽만으로 verification이
+  // fail해도 다른 쪽이 받쳐주게. Google 인증 코드는 search.google.com/
+  // search-console에서 받아서 채우면 됨.
   verification: {
     // google: "여기에_구글_인증코드",
     other: {
-      // "naver-site-verification": "여기에_네이버_인증코드",
+      "naver-site-verification": "2150562d9ace8df800e3d6896e1ba82a",
     },
   },
   other: {
