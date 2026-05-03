@@ -689,7 +689,7 @@ Respond in JSON only:
 
     const fb=document.getElementById("aiFeedback");
     fb.className=`ai-feedback ${parsed.result==="pass"?"pass":parsed.result==="partial"?"partial":"fail"}`;
-    fb.textContent=(parsed.result==="pass"?"✅ ":"parsed.result==="partial"?"🔶 ":"❌ ")+parsed.feedback_ko;
+    fb.textContent=(parsed.result==="pass"?"✅ ":parsed.result==="partial"?"🔶 ":"❌ ")+parsed.feedback_ko;
     fb.style.display="block";
     showExp(q.exp);
   }catch(e){
