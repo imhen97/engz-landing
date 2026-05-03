@@ -1,9 +1,9 @@
-// Twitter card image — same render as Open Graph (/opengraph-image).
-// Next.js route-segment configs must be statically parseable, so we
-// redeclare the constants and re-export the default render function.
+// Twitter card image — uses the same renderer as Open Graph (/opengraph-image).
+// Re-exports the default by direct import so Next.js bundles a separate route
+// but the visual output is identical.
 import OGImage from "./opengraph-image";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "ENGZ — 김해나 1:1 프리미엄 영어";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

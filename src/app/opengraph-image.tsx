@@ -1,48 +1,26 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 // Next.js App Router auto-route: /opengraph-image
 // Used by KakaoTalk, Facebook, LinkedIn, Slack, etc. as og:image.
 // Twitter has its own (twitter-image.tsx) sharing the same render.
+//
+// Runtime: nodejs (not edge) — Turbopack can't load .ttf imports, and edge
+// fetch of Google Fonts CSS API is unreliable (UA override prevents getting
+// non-WOFF2). Reading bundled subset fonts via fs.readFile is the simplest
+// reliable path. ~14KB of font data, single-digit ms read.
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "ENGZ — 김해나 1:1 프리미엄 영어";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Google Fonts API returns TTF (Satori-compatible) when called with an old UA
-// that doesn't advertise woff2 support. Subset Korean text via &text= so the
-// downloaded font is small (a few KB instead of 1MB+ for full Noto KR).
-const TTF_UA =
-  "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19";
-
-async function loadFont(
-  family: string,
-  weight: number,
-  text?: string
-): Promise<ArrayBuffer> {
-  const params = new URLSearchParams({
-    family: `${family}:wght@${weight}`,
-    display: "swap",
-  });
-  if (text) params.set("text", text);
-  const cssUrl = `https://fonts.googleapis.com/css2?${params.toString()}`;
-  const css = await fetch(cssUrl, {
-    headers: { "User-Agent": TTF_UA },
-  }).then((r) => r.text());
-  const match = css.match(/src:\s*url\(([^)]+)\)/);
-  if (!match) throw new Error(`Font URL not found in CSS for ${family}`);
-  return fetch(match[1]).then((r) => r.arrayBuffer());
-}
-
 export default async function OGImage() {
-  // 한글 서브셋 — OG 이미지에 실제로 들어가는 글자만
-  const koreanText = "1:프리미엄영어년차검증강사대표임원전문직1맞춤";
-
-  const [outfitBlack, outfitMed, notoBold, notoMed] = await Promise.all([
-    loadFont("Outfit", 900),
-    loadFont("Outfit", 500),
-    loadFont("Noto+Sans+KR", 700, koreanText),
-    loadFont("Noto+Sans+KR", 500, koreanText),
+  const fontDir = path.join(process.cwd(), "src/app/_fonts");
+  const [outfitBlack, notoBold] = await Promise.all([
+    readFile(path.join(fontDir, "outfit-900-sub.ttf")),
+    readFile(path.join(fontDir, "noto-kr-700-sub.ttf")),
   ]);
 
   return new ImageResponse(
@@ -221,19 +199,7 @@ export default async function OGImage() {
       ...size,
       fonts: [
         { name: "Outfit", data: outfitBlack, weight: 900, style: "normal" },
-        { name: "Outfit", data: outfitMed, weight: 500, style: "normal" },
-        {
-          name: "Noto Sans KR",
-          data: notoBold,
-          weight: 700,
-          style: "normal",
-        },
-        {
-          name: "Noto Sans KR",
-          data: notoMed,
-          weight: 500,
-          style: "normal",
-        },
+        { name: "Noto Sans KR", data: notoBold, weight: 700, style: "normal" },
       ],
     }
   );
