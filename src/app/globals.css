@@ -16,11 +16,40 @@ html {
   scroll-behavior: smooth;
 }
 
+/* 모바일에서는 smooth scroll 끔 — anchor 클릭 시 부드러운 스크롤이
+   touch scroll과 충돌해서 끊김의 원인이 됨. 즉시 점프가 더 자연스러움. */
+@media (max-width: 767px) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  /* iOS subpixel anti-aliasing이 기본값인데, transform·blur 위에서 텍스트
+     paint cost를 키움. greyscale로 가벼워짐 + iOS 시각적 차이 거의 없음. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 큰 absolute 자식(hero 원, blob)이 만드는 가로 overflow 차단. */
+  overflow-x: hidden;
+}
+
+/* 첫 viewport 이후 섹션은 화면 밖일 때 렌더링 미루기 — 모바일 초기 페인트
+   부담 크게 줄임. content-visibility는 IntersectionObserver와 호환되며
+   visible 영역 진입 시 자동으로 활성화됨. */
+@media (max-width: 767px) {
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+  /* hero는 첫 viewport라 미루지 않음 — content-visibility:auto는 첫
+     렌더에서 placeholder 블링크 일으킬 수 있음. */
+  section:first-of-type {
+    content-visibility: visible;
+  }
 }
 
 @keyframes fade-in-up {
@@ -154,6 +183,40 @@ body {
 
 .animate-blob-2 {
   animation: blob-2 10s ease-in-out infinite;
+}
+
+/* 모바일에서는 무한 블롭 애니메이션 정지 — blur-3xl + 무한 transform은
+   모바일 GPU에서 계속 paint cost 발생시켜 다른 섹션 스크롤도 끊기게 함.
+   정적 위치만 보여줘도 디자인 의도(은은한 글로우)는 충분히 전달됨. */
+@media (max-width: 767px) {
+  .animate-blob-1,
+  .animate-blob-2,
+  .animate-float,
+  .animate-scroll-bounce,
+  .animate-scroll-dot {
+    animation: none !important;
+  }
+}
+
+/* 사용자가 motion-reduce를 선호하면 모든 무한 애니메이션 정지 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob-1,
+  .animate-blob-2,
+  .animate-float,
+  .animate-scroll-bounce,
+  .animate-scroll-dot,
+  .animate-fade-in-up,
+  .animate-fade-in {
+    animation: none !important;
+  }
+  .animate-on-scroll,
+  .animate-on-scroll-scale,
+  .animate-on-scroll-left,
+  .animate-on-scroll-right {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* Scroll-triggered animations */

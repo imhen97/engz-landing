@@ -249,16 +249,40 @@ export default function Home() {
 
   useScrollAnimation();
 
+  // 스크롤 핸들러: rAF로 batched, 모바일에선 parallax skip.
+  // 이전 버전은 매 scroll event마다 동기 DOM write + circle에 걸린
+  // transition-transform과 충돌해서 모바일에서 prep/paint cost 폭발.
   useEffect(() => {
-    const handler = () => {
-      setScrolled(window.scrollY > 20);
-      const progress = Math.min(window.scrollY / window.innerHeight, 1);
-      if (leftCircleRef.current) leftCircleRef.current.style.transform = `translateX(${-progress * 800}px)`;
-      if (rightCircleRef.current) rightCircleRef.current.style.transform = `translateX(${progress * 800}px)`;
-      if (heroContentRef.current) heroContentRef.current.style.opacity = `${1 - progress}`;
+    const isParallaxOk = window.matchMedia(
+      "(min-width: 768px) and (prefers-reduced-motion: no-preference)"
+    ).matches;
+    let rafId = 0;
+    let lastY = -1;
+    const apply = () => {
+      rafId = 0;
+      const y = window.scrollY;
+      if (y === lastY) return;
+      lastY = y;
+      setScrolled(y > 20);
+      if (!isParallaxOk) return;
+      const progress = Math.min(y / window.innerHeight, 1);
+      if (leftCircleRef.current)
+        leftCircleRef.current.style.transform = `translate3d(${-progress * 800}px,0,0)`;
+      if (rightCircleRef.current)
+        rightCircleRef.current.style.transform = `translate3d(${progress * 800}px,0,0)`;
+      if (heroContentRef.current)
+        heroContentRef.current.style.opacity = `${1 - progress}`;
     };
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(apply);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    apply();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   function handleContactSubmit(e: React.FormEvent) {
@@ -272,10 +296,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ===== Sticky Navigation ===== */}
+      {/* ===== Sticky Navigation =====
+          모바일은 backdrop-blur 끔 (GPU 부담 + 스크롤 페인트 끊김 원인).
+          데스크탑만 frosted glass 효과 — 모바일은 95% 불투명 흰색으로 충분. */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-white/85 backdrop-blur-xl shadow-sm border-b border-zinc-100" : "bg-transparent"
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+          scrolled
+            ? "bg-white/95 md:bg-white/85 md:backdrop-blur-xl shadow-sm border-b border-zinc-100"
+            : "bg-transparent"
         }`}
       >
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between h-16">
@@ -330,7 +358,7 @@ export default function Home() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-zinc-100">
+          <div className="md:hidden bg-white border-b border-zinc-100">
             <div className="px-6 py-4 flex flex-col gap-4">
               {[
                 { href: "#why", label: "차별점" },
@@ -360,17 +388,22 @@ export default function Home() {
           1. HERO — 변경안 A
           =========================================================== */}
       <section className="relative h-[100vh] overflow-hidden bg-white">
+        {/* Hero parallax 원: transition-transform 제거 — JS에서 직접 transform
+            업데이트하기 때문에 transition은 입력과 GPU 갱신 사이에 드래그
+            만들어내서 모바일에서 jank의 원인이었음. transform 자체는 GPU
+            합성 레이어에서 처리되니 will-change-transform만 남기면 충분.
+            mobile에선 parallax 자체를 skip하므로 정적 위치. */}
         <div
           ref={leftCircleRef}
-          className="absolute top-[-30%] left-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none transition-transform duration-100 will-change-transform"
+          className="absolute top-[-30%] left-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none will-change-transform"
         >
-          <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF5C39] via-[#FF6B4A] to-[#FF7A5C] shadow-2xl" />
+          <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF5C39] via-[#FF6B4A] to-[#FF7A5C] shadow-xl md:shadow-2xl" />
         </div>
         <div
           ref={rightCircleRef}
-          className="absolute top-[-30%] right-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none transition-transform duration-100 will-change-transform"
+          className="absolute top-[-30%] right-[-30%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] z-10 pointer-events-none will-change-transform"
         >
-          <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF6B4A] via-[#FF7A5C] to-[#FF8A6C] shadow-2xl" />
+          <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FF6B4A] via-[#FF7A5C] to-[#FF8A6C] shadow-xl md:shadow-2xl" />
         </div>
 
         <div
