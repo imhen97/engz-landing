@@ -8,6 +8,7 @@ import {
   type Axis,
   type Level,
 } from "../_data";
+import { saveHistoryEntry } from "../_history";
 
 /* ENGZ 진단 결과 페이지.
  * URL: /diagnose/result?r=<base64url-encoded payload>
@@ -91,12 +92,31 @@ export default function ResultPage() {
   const [copied, setCopied] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  const [imageUrl, setImageUrl] = useState("");
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const decoded = decodeResult(params.get("r"));
+    const encoded = params.get("r");
+    const decoded = decodeResult(encoded);
     setData(decoded);
     setShareUrl(window.location.href);
     setLoaded(true);
+
+    if (encoded) {
+      setImageUrl(`${window.location.origin}/api/result-image?r=${encoded}`);
+    }
+
+    // 히스토리에 저장 — 다음 방문 시 인트로에서 보임
+    if (decoded && encoded) {
+      const lvl = levelFromScore(decoded.t);
+      const top = topPercent(decoded.t);
+      saveHistoryEntry({
+        score: decoded.t,
+        topPercent: top,
+        level: lvl.cefr,
+        encoded,
+        ts: decoded.ts,
+      });
+    }
   }, []);
 
   if (!loaded) {
@@ -343,14 +363,14 @@ export default function ResultPage() {
           </a>
         </section>
 
-        {/* 결과 공유 */}
+        {/* 결과 공유 + 이미지 다운로드 */}
         <section className="rounded-3xl bg-white border border-zinc-200 p-6 sm:p-8 mb-6">
           <h2 className="text-base font-bold mb-1">🔗 결과 공유</h2>
           <p className="text-sm text-zinc-500 mb-4 leading-relaxed">
             이 결과 페이지는 고유 URL로 저장돼요. 친구·동료에게 공유해도
             동일한 결과가 보입니다.
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-4">
             <input
               readOnly
               value={shareUrl}
@@ -364,6 +384,19 @@ export default function ResultPage() {
               {copied ? "✓ 복사됨" : "공유 / 복사"}
             </button>
           </div>
+
+          {/* 이미지 다운로드 — 카톡 게시물 / 인스타 등 시각 공유용 */}
+          {imageUrl && (
+            <a
+              href={imageUrl}
+              download={`engz-diagnosis-${data.t}.png`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 px-4 py-2.5 text-sm font-semibold text-zinc-700 transition-colors"
+            >
+              📥 결과 이미지 다운로드 (카톡·인스타용)
+            </a>
+          )}
         </section>
 
         {/* 다시 진단 + footer */}

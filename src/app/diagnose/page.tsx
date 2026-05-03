@@ -10,6 +10,7 @@ import {
   type Level,
   AXIS_KO,
 } from "./_data";
+import { loadHistory, type HistoryEntry } from "./_history";
 
 /* ---------------------------------------------------------------------------
  * ENGZ 무료 영어 진단 — /diagnose
@@ -152,6 +153,11 @@ export default function DiagnosePage() {
  * ══════════════════════════════════════════════════════════════════════ */
 
 function IntroScreen({ onStart }: { onStart: () => void }) {
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  useEffect(() => {
+    setHistory(loadHistory());
+  }, []);
+
   return (
     <main className="min-h-[100dvh] bg-white text-zinc-900">
       <div className="mx-auto max-w-2xl px-5 py-12 sm:py-20">
@@ -236,6 +242,46 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
         <p className="mt-4 text-center text-xs text-zinc-400">
           완전 무료 · 회원가입 불필요 · 결과 URL 즉시 발급
         </p>
+
+        {/* 지난 진단 결과 (브라우저에 5개까지 자동 저장) */}
+        {history.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xs font-bold tracking-wider uppercase text-zinc-400 mb-3">
+              지난 진단 결과 ({history.length})
+            </h2>
+            <div className="space-y-2">
+              {history.map((h) => (
+                <a
+                  key={h.ts}
+                  href={`/diagnose/result?r=${h.encoded}`}
+                  className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-3.5 hover:border-orange-300 transition-colors"
+                >
+                  <div
+                    className="text-2xl font-extrabold tabular-nums"
+                    style={{ color: BRAND }}
+                  >
+                    {h.score}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-zinc-900">
+                      CEFR {h.level} · 상위 {Math.round(h.topPercent)}%
+                    </div>
+                    <div className="text-xs text-zinc-500">
+                      {new Date(h.ts).toLocaleString("ko-KR", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                    </div>
+                  </div>
+                  <div className="text-zinc-300">→</div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
