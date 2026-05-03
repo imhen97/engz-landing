@@ -229,14 +229,6 @@ function useScrollAnimation() {
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showDiagnostic, setShowDiagnostic] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.matchMedia("(max-width: 767px)").matches);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
   const leftCircleRef = useRef<HTMLDivElement>(null);
   const rightCircleRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
@@ -489,49 +481,22 @@ export default function Home() {
             </p>
           </div>
 
-          {/* 인터랙티브 진단 테스트.
-              모바일은 새 탭 (full screen) — iframe nested scroll 방지.
-              데스크탑은 inline iframe — 페이지 흐름 유지.
-              모바일 버튼은 <a target="_blank">로 마운트해서 SSR/CSR 양쪽 모두
-              안전하게 동작 (window.matchMedia를 effect에서 감지). */}
-          <div className="mb-8">
-            {!showDiagnostic ? (
-              <div className="text-center">
-                {isMobile ? (
-                  <a
-                    href="/diagnostic.html"
-                    target="_blank"
-                    rel="noopener"
-                    className="inline-flex items-center gap-2 px-8 py-5 rounded-full bg-white text-[#FF5C39] font-bold text-base shadow-2xl active:scale-[0.98] transition-transform"
-                  >
-                    무료 테스트로 내 영어실력 진단받기
-                    <span aria-hidden>→</span>
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowDiagnostic(true)}
-                    className="inline-flex items-center gap-2 px-10 py-6 rounded-full bg-white text-[#FF5C39] font-bold text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                  >
-                    무료 테스트로 내 영어실력 진단받기
-                    <span aria-hidden>→</span>
-                  </button>
-                )}
-                <p className="mt-4 text-xs sm:text-sm text-white/80">
-                  5분 · 20문제 · 회원가입 불필요
-                </p>
-              </div>
-            ) : (
-              <div className="rounded-3xl bg-white shadow-2xl overflow-hidden">
-                <iframe
-                  src="/diagnostic.html"
-                  title="ENGZ 무료 영어 진단 테스트"
-                  className="w-full border-0 block"
-                  style={{ height: "min(1400px, max(1100px, 100vh))" }}
-                  allow="microphone; autoplay; clipboard-write"
-                />
-              </div>
-            )}
+          {/* 진단 페이지 링크.
+              구버전 정적 HTML iframe은 모바일 nested scroll, syntax error,
+              브라우저 직접 Anthropic 호출 등 다수 문제로 폐기. 새로 만든
+              /diagnose 라우트로 이동 — Next.js 페이지 + 서버 AI 채점 +
+              5축 결과 + 공유 가능 URL (RESEARCH_diagnostic_tests.md 기반). */}
+          <div className="mb-8 text-center">
+            <a
+              href="/diagnose"
+              className="inline-flex items-center gap-2 px-8 sm:px-10 py-5 sm:py-6 rounded-full bg-white text-[#FF5C39] font-bold text-base sm:text-lg shadow-2xl active:scale-[0.98] hover:scale-[1.02] transition-transform"
+            >
+              무료 테스트로 내 영어실력 진단받기
+              <span aria-hidden>→</span>
+            </a>
+            <p className="mt-4 text-xs sm:text-sm text-white/80">
+              5분 · 20문제 · 5축 정밀 분석 · 회원가입 불필요
+            </p>
           </div>
 
           {/* 추가 컨설팅 신청 — 테스트 결과 받고도 1:1 자세한 상담 원하는 분 */}
