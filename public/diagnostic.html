@@ -264,7 +264,7 @@ h1,h2,h3,.num{font-family:'Outfit',sans-serif}
         <div class="lv-name">초급</div>
         <div class="lv-desc">기초 단어는 알지만 문장이 어려워요</div>
       </div>
-      <div class="lv-card" data-lv="intermediate" onclick="pickLevel(this)">
+      <div class="lv-card sel" data-lv="intermediate" onclick="pickLevel(this)">
         <div class="lv-emoji">🌿</div>
         <div class="lv-eng">Intermediate</div>
         <div class="lv-name">중급</div>
@@ -279,7 +279,9 @@ h1,h2,h3,.num{font-family:'Outfit',sans-serif}
     </div>
   </div>
 
-  <button class="btn" id="s1next" disabled onclick="go('s2')">진단 시작하기 →</button>
+  <!-- 중급(intermediate)이 markup default로 sel — 버튼은 처음부터 활성. 사용자가
+       다른 레벨 선택해도 pickLevel이 selectedLevel을 덮어씀. -->
+  <button class="btn" id="s1next" onclick="go('s2')">진단 시작하기 →</button>
   <p style="text-align:center;font-size:11px;color:var(--text-hint);margin-top:.5rem">완전 무료 · 회원가입 불필요</p>
 </div>
 
@@ -532,7 +534,9 @@ const LEVEL_DESC=[
   "높은 수준이에요! 고급 표현 교정과 세밀한 전략으로 완성도를 높여요.",
 ];
 
-let selectedLevel="", qList=[], qi=0, totalCorrect=0, answered=false;
+// 기본값 intermediate — markup의 .lv-card.sel과 일치시킴.
+// DOMContentLoaded 등 이벤트 의존 없이 첫 클릭부터 startQuiz가 정상 동작.
+let selectedLevel="intermediate", qList=[], qi=0, totalCorrect=0, answered=false;
 let domainScores={mc:{c:0,t:0},sa:{c:0,t:0},li:{c:0,t:0},sp:{c:0,t:0}};
 let mediaRecorder=null, audioChunks=[], isRecording=false;
 let currentAudio=null, listenCount=0, selectedPlan=0;
@@ -556,16 +560,6 @@ function pickLevel(el){
   // 모바일에서 칩이 화면 가운데, 버튼이 fold 아래로 밀려서 안 보이는 문제 방지
   try{ btn.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
 }
-// 기본값 중급 — fold 아래 버튼을 못 보고 "안 눌린다"는 사용자 보고 누적되어
-// 처음부터 활성 상태로 시작. 사용자가 다른 레벨을 선택하면 덮어씀.
-window.addEventListener("DOMContentLoaded",function(){
-  const def=document.querySelector('.lv-card[data-lv="intermediate"]');
-  if(def){
-    def.classList.add("sel");
-    selectedLevel="intermediate";
-    document.getElementById("s1next").disabled=false;
-  }
-});
 
 // ══ 퀴즈 시작 ══
 function startQuiz(){
