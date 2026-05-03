@@ -369,7 +369,13 @@ export default function Home() {
           <div className="animate-fade-in-up">
             <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-gray-900 mb-6 sm:mb-8 leading-[1.05] tracking-tight">
               Welcome to{" "}
-              <span className="bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] bg-clip-text text-transparent">
+              {/* "ENGZ" 색상: 기존 오렌지 그라데이션은 배경의 오렌지 블롭과 색이
+                  겹쳐서 흐릿하게 보였음. 더 진한 오렌지(700~800계열) +
+                  drop-shadow로 어떤 배경에서도 또렷하게 읽히게.                */}
+              <span
+                className="bg-gradient-to-r from-orange-700 to-[#FF5C39] bg-clip-text text-transparent"
+                style={{ WebkitTextStroke: '1px rgba(0,0,0,0.05)' }}
+              >
                 ENGZ
               </span>
             </h1>
@@ -380,7 +386,7 @@ export default function Home() {
 
             {/* 신뢰 배지 — 한 줄, 작게 */}
             <p className="text-xs sm:text-sm text-gray-500 mb-10 sm:mb-12 tracking-[0.12em]">
-              비즈니스 영어 1위 &nbsp;·&nbsp; 9년차 &nbsp;·&nbsp; 별점 5.0 &nbsp;·&nbsp; OPIc AL
+              국내 과외 플랫폼 비즈니스 영어 1위
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
