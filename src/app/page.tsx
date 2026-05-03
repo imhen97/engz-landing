@@ -726,6 +726,8 @@ export default function Home() {
 
       {/* ===========================================================
           7. DIAGNOSE — 무료 영어 레벨 진단
+          상단 = 인터랙티브 진단 테스트 (객관식/주관식/듣기/스피킹 4유형, 20문제, 5분)
+          하단 = 김해나 강사 직접 컨설팅 신청 폼 (테스트 결과 + 추가 상담)
           =========================================================== */}
       <section
         id="diagnose"
@@ -737,23 +739,48 @@ export default function Home() {
           <div className="absolute bottom-20 left-20 w-[500px] h-[500px] rounded-full bg-orange-200 blur-3xl animate-blob-2" />
         </div>
 
-        <div className="relative max-w-3xl mx-auto">
-          <div className="animate-on-scroll text-center text-white mb-12">
+        <div className="relative max-w-4xl mx-auto">
+          <div className="animate-on-scroll text-center text-white mb-10">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80 mb-3">
               Free Diagnosis
             </p>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
-              5분 만에, 내 영어 레벨을 알아보세요.
+              5분 만에, 내 영어 레벨을 정확히.
             </h2>
             <p className="text-sm sm:text-base text-white/90 leading-relaxed">
-              간단한 진단 후, 김해나 강사가 직접
+              객관식 · 주관식 · 듣기 · 스피킹 4가지 유형으로 정밀 진단해드려요.
               <br className="hidden sm:block" />
-              {" "}당신의 학습 방향을 카톡으로 제안해드립니다.
+              {" "}완료 후 김해나 강사가 직접 카톡으로 학습 방향을 제안합니다.
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white shadow-2xl p-7 sm:p-10">
-            <form onSubmit={handleContactSubmit} className="space-y-5">
+          {/* 인터랙티브 진단 테스트 — 정적 HTML iframe */}
+          <div className="rounded-3xl bg-white shadow-2xl overflow-hidden mb-8">
+            <iframe
+              src="/diagnostic.html"
+              title="ENGZ 무료 영어 진단 테스트"
+              className="w-full border-0 block"
+              style={{ height: "min(85vh, 800px)", minHeight: 600 }}
+              loading="lazy"
+            />
+          </div>
+
+          {/* 추가 컨설팅 신청 — 테스트 결과 받고도 1:1 자세한 상담 원하는 분 */}
+          <details className="rounded-2xl bg-white/95 shadow-xl overflow-hidden group">
+            <summary className="cursor-pointer px-6 sm:px-8 py-5 flex items-center justify-between hover:bg-orange-50/50 transition list-none">
+              <div>
+                <p className="text-sm sm:text-base font-bold text-gray-900">
+                  ✉️ 김해나 강사에게 직접 1:1 컨설팅 받기
+                </p>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  진단 결과 + 학습 목표를 보내면 24시간 안에 맞춤 답장
+                </p>
+              </div>
+              <span className="text-xs text-[#FF5C39] font-semibold group-open:rotate-180 transition">
+                ▾
+              </span>
+            </summary>
+            <form onSubmit={handleContactSubmit} className="p-6 sm:p-8 pt-0 space-y-5 border-t border-zinc-100">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
@@ -802,13 +829,13 @@ export default function Home() {
                 type="submit"
                 className="w-full bg-gradient-to-r from-[#FF5C39] to-[#FF7A5C] hover:opacity-90 text-white font-semibold px-8 py-4 rounded-xl text-sm transition shadow-md"
               >
-                {sent ? "메일 앱이 열렸습니다" : "무료 진단 신청하기"}
+                {sent ? "메일 앱이 열렸습니다" : "무료 1:1 컨설팅 신청하기"}
               </button>
               <p className="text-center text-[11px] text-zinc-400">
                 imhen97@eng-z.com 으로 전송 · 24시간 안에 카톡으로 답장
               </p>
             </form>
-          </div>
+          </details>
         </div>
       </section>
 
