@@ -380,12 +380,12 @@ export default function Home() {
           <div className="animate-fade-in-up">
             <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-gray-900 mb-6 sm:mb-8 leading-[1.05] tracking-tight">
               Welcome to{" "}
-              {/* "ENGZ" 색상: 기존 오렌지 그라데이션은 배경의 오렌지 블롭과 색이
-                  겹쳐서 흐릿하게 보였음. 더 진한 오렌지(700~800계열) +
-                  drop-shadow로 어떤 배경에서도 또렷하게 읽히게.                */}
+              {/* "ENGZ" — 오렌지 위에 오렌지가 깔리는 mud 문제 해결.
+                  전부 흰색 wordmark + 그림자로 떠있게.
+                  사용자: "색상이 너무 구려" (2026-05-03). */}
               <span
-                className="bg-gradient-to-r from-orange-700 to-[#FF5C39] bg-clip-text text-transparent"
-                style={{ WebkitTextStroke: '1px rgba(0,0,0,0.05)' }}
+                className="text-white"
+                style={{ textShadow: '0 4px 24px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.10)' }}
               >
                 ENGZ
               </span>
