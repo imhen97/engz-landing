@@ -230,6 +230,13 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDiagnostic, setShowDiagnostic] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.matchMedia("(max-width: 767px)").matches);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const leftCircleRef = useRef<HTMLDivElement>(null);
   const rightCircleRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
@@ -449,24 +456,34 @@ export default function Home() {
             </p>
           </div>
 
-          {/* 인터랙티브 진단 테스트 — 정적 HTML iframe.
-              버튼 클릭 전까지는 iframe을 마운트하지 않음 (lazy mount).
-              모바일에서 페이지 로드시 1100px iframe + 그 안의 무거운 JS가
-              한꺼번에 깔리면 스크롤이 끊기고 칩이 안 눌리는 등의 인터랙션
-              문제가 발생. 사용자 의향이 명시된 후에만 깐다.
-              `allow` 속성 필수: 스피킹(마이크) + 듣기(TTS speechSynthesis).
-              명시 안 되면 getUserMedia가 NotAllowedError로 실패. */}
+          {/* 인터랙티브 진단 테스트.
+              모바일은 새 탭 (full screen) — iframe nested scroll 방지.
+              데스크탑은 inline iframe — 페이지 흐름 유지.
+              모바일 버튼은 <a target="_blank">로 마운트해서 SSR/CSR 양쪽 모두
+              안전하게 동작 (window.matchMedia를 effect에서 감지). */}
           <div className="mb-8">
             {!showDiagnostic ? (
               <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => setShowDiagnostic(true)}
-                  className="inline-flex items-center gap-2 px-8 sm:px-10 py-5 sm:py-6 rounded-full bg-white text-[#FF5C39] font-bold text-base sm:text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                >
-                  무료 테스트로 내 영어실력 진단받기
-                  <span aria-hidden>→</span>
-                </button>
+                {isMobile ? (
+                  <a
+                    href="/diagnostic.html"
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex items-center gap-2 px-8 py-5 rounded-full bg-white text-[#FF5C39] font-bold text-base shadow-2xl active:scale-[0.98] transition-transform"
+                  >
+                    무료 테스트로 내 영어실력 진단받기
+                    <span aria-hidden>→</span>
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowDiagnostic(true)}
+                    className="inline-flex items-center gap-2 px-10 py-6 rounded-full bg-white text-[#FF5C39] font-bold text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  >
+                    무료 테스트로 내 영어실력 진단받기
+                    <span aria-hidden>→</span>
+                  </button>
+                )}
                 <p className="mt-4 text-xs sm:text-sm text-white/80">
                   5분 · 20문제 · 회원가입 불필요
                 </p>

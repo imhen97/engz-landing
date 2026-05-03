@@ -551,8 +551,21 @@ function pickLevel(el){
   document.querySelectorAll(".lv-card").forEach(c=>c.classList.remove("sel"));
   el.classList.add("sel");
   selectedLevel=el.dataset.lv;
-  document.getElementById("s1next").disabled=false;
+  const btn=document.getElementById("s1next");
+  btn.disabled=false;
+  // 모바일에서 칩이 화면 가운데, 버튼이 fold 아래로 밀려서 안 보이는 문제 방지
+  try{ btn.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
 }
+// 기본값 중급 — fold 아래 버튼을 못 보고 "안 눌린다"는 사용자 보고 누적되어
+// 처음부터 활성 상태로 시작. 사용자가 다른 레벨을 선택하면 덮어씀.
+window.addEventListener("DOMContentLoaded",function(){
+  const def=document.querySelector('.lv-card[data-lv="intermediate"]');
+  if(def){
+    def.classList.add("sel");
+    selectedLevel="intermediate";
+    document.getElementById("s1next").disabled=false;
+  }
+});
 
 // ══ 퀴즈 시작 ══
 function startQuiz(){
