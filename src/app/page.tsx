@@ -439,13 +439,19 @@ export default function Home() {
             </p>
           </div>
 
-          {/* 인터랙티브 진단 테스트 — 정적 HTML iframe */}
+          {/* 인터랙티브 진단 테스트 — 정적 HTML iframe.
+              높이를 콘텐츠보다 작게 잡으면 iframe 안에 스크롤바가 생겨서 사용자가
+              "진단 시작하기" 버튼까지 닿기 전에 화면 잘려 보이는 이슈가 있었음.
+              이젠 viewport보다 충분히 크게 (최소 1100px / max 1400px) 잡고
+              필요하면 페이지 자체가 스크롤되게. iframe 자체 스크롤 X.
+              완전한 해결은 postMessage 기반 auto-resize지만, 그러려면
+              diagnostic.html을 같이 수정해야 해서 일단 큰 고정 높이로.       */}
           <div className="rounded-3xl bg-white shadow-2xl overflow-hidden mb-8">
             <iframe
               src="/diagnostic.html"
               title="ENGZ 무료 영어 진단 테스트"
               className="w-full border-0 block"
-              style={{ height: "min(85vh, 800px)", minHeight: 600 }}
+              style={{ height: "min(1400px, max(1100px, 100vh))" }}
               loading="lazy"
             />
           </div>
