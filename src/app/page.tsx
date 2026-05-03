@@ -229,6 +229,7 @@ function useScrollAnimation() {
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
   const leftCircleRef = useRef<HTMLDivElement>(null);
   const rightCircleRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
@@ -449,20 +450,38 @@ export default function Home() {
           </div>
 
           {/* 인터랙티브 진단 테스트 — 정적 HTML iframe.
-              높이는 충분히 크게 (최소 1100px) 잡아서 내부 스크롤 안 생기게.
-              `allow` 속성 필수: 진단 테스트 안에서 스피킹 섹션이 마이크를 쓰고
-              듣기 섹션이 TTS(speechSynthesis)를 쓰는데, iframe에 권한이
-              명시 안 되면 getUserMedia가 NotAllowedError로 실패함.
-              그래서 사용자가 "진단테스트 왜 자꾸 오류뜨냐"고 본 것.            */}
-          <div className="rounded-3xl bg-white shadow-2xl overflow-hidden mb-8">
-            <iframe
-              src="/diagnostic.html"
-              title="ENGZ 무료 영어 진단 테스트"
-              className="w-full border-0 block"
-              style={{ height: "min(1400px, max(1100px, 100vh))" }}
-              loading="lazy"
-              allow="microphone; autoplay; clipboard-write"
-            />
+              버튼 클릭 전까지는 iframe을 마운트하지 않음 (lazy mount).
+              모바일에서 페이지 로드시 1100px iframe + 그 안의 무거운 JS가
+              한꺼번에 깔리면 스크롤이 끊기고 칩이 안 눌리는 등의 인터랙션
+              문제가 발생. 사용자 의향이 명시된 후에만 깐다.
+              `allow` 속성 필수: 스피킹(마이크) + 듣기(TTS speechSynthesis).
+              명시 안 되면 getUserMedia가 NotAllowedError로 실패. */}
+          <div className="mb-8">
+            {!showDiagnostic ? (
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowDiagnostic(true)}
+                  className="inline-flex items-center gap-2 px-8 sm:px-10 py-5 sm:py-6 rounded-full bg-white text-[#FF5C39] font-bold text-base sm:text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                >
+                  무료 테스트로 내 영어실력 진단받기
+                  <span aria-hidden>→</span>
+                </button>
+                <p className="mt-4 text-xs sm:text-sm text-white/80">
+                  5분 · 20문제 · 회원가입 불필요
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-3xl bg-white shadow-2xl overflow-hidden">
+                <iframe
+                  src="/diagnostic.html"
+                  title="ENGZ 무료 영어 진단 테스트"
+                  className="w-full border-0 block"
+                  style={{ height: "min(1400px, max(1100px, 100vh))" }}
+                  allow="microphone; autoplay; clipboard-write"
+                />
+              </div>
+            )}
           </div>
 
           {/* 추가 컨설팅 신청 — 테스트 결과 받고도 1:1 자세한 상담 원하는 분 */}
