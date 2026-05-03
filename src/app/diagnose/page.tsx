@@ -743,15 +743,30 @@ function SPBody({
   const [transcript, setTranscript] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string>("");
   const recRef = useRef<unknown>(null);
+  const mediaRecRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
-  function start() {
+  // 컴포넌트 unmount / 다음 문제 진입 시 blob URL 정리 (메모리 누수 방지)
+  useEffect(() => {
+    return () => {
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+    // audioUrl 변경 시에도 이전 URL 해제
+  }, [audioUrl]);
+
+  async function start() {
     type SRConstructor = new () => SpeechRecognitionLike;
     interface SpeechRecognitionLike {
       lang: string;
       continuous: boolean;
       interimResults: boolean;
-      onresult: ((e: { results: ArrayLike<{ 0: { transcript: string } }> }) => void) | null;
+      onresult:
+        | ((e: { results: ArrayLike<{ 0: { transcript: string } }> }) => void)
+        | null;
       onend: (() => void) | null;
       start: () => void;
       stop: () => void;
@@ -767,12 +782,42 @@ function SPBody({
       );
       return;
     }
+
+    // 1) MediaRecorder — 실제 오디오 캡처해서 본인 음성 재생용 blob 만듦.
+    //    webkitSpeechRecognition은 자체 mic 캡처하므로 둘이 동시에 mic 잡아도
+    //    Chrome / 데스크탑 Safari에선 충돌 X. iOS Safari는 webkitSpeech 자체
+    //    미지원이라 어차피 textarea fallback.
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mr = new MediaRecorder(stream);
+      chunksRef.current = [];
+      mr.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      mr.onstop = () => {
+        if (chunksRef.current.length === 0) return;
+        const blob = new Blob(chunksRef.current, {
+          type: mr.mimeType || "audio/webm",
+        });
+        const url = URL.createObjectURL(blob);
+        setAudioUrl(url);
+      };
+      mediaRecRef.current = mr;
+      mr.start();
+    } catch {
+      // mic 권한 거부 — speechRecognition만 (transcript는 살아있으면 됨)
+    }
+
+    // 2) Speech recognition
     const r = new SR();
     r.lang = "en-US";
     r.continuous = true;
     r.interimResults = true;
     let acc = "";
-    r.onresult = (e: { results: ArrayLike<{ 0: { transcript: string } }> }) => {
+    r.onresult = (e: {
+      results: ArrayLike<{ 0: { transcript: string } }>;
+    }) => {
       acc = "";
       for (let i = 0; i < e.results.length; i++) {
         acc += e.results[i][0].transcript;
@@ -784,6 +829,10 @@ function SPBody({
     };
     recRef.current = r;
     setTranscript("");
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+      setAudioUrl("");
+    }
     setRecording(true);
     r.start();
   }
@@ -795,6 +844,13 @@ function SPBody({
     } catch {
       // ignore
     }
+    try {
+      mediaRecRef.current?.stop();
+    } catch {
+      // ignore
+    }
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
     setRecording(false);
   }
 
@@ -864,6 +920,15 @@ function SPBody({
           <div className="w-full rounded-lg bg-white border border-violet-200 px-3 py-2 text-sm text-zinc-800">
             {transcript}
           </div>
+        )}
+        {/* 본인 음성 재생 — 발음·억양 자가 점검용. 녹음 끝났고 blob 있을 때만 */}
+        {!recording && audioUrl && (
+          <audio
+            src={audioUrl}
+            controls
+            preload="metadata"
+            className="w-full mt-1"
+          />
         )}
         {!recording && (
           <textarea
