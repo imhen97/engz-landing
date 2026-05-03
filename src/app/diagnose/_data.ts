@@ -46,7 +46,277 @@ export interface SPQuestion {
 
 export type Question = MCQuestion | SAQuestion | LIQuestion | SPQuestion;
 
-// ─── INTERMEDIATE BANK (default for v1) ───
+// ─── BEGINNER BANK ───
+// 적응형: 첫 5문제(MC) 정답 0~1개 → beginner로 분기.
+export const QB_BEGINNER = {
+  mc: [], // 적응형 calibration은 항상 intermediate MC로 — 정확한 분기 신호.
+  sa: [
+    {
+      type: "sa",
+      q: "다음을 영작하세요: 나는 학생이다.",
+      ans: ["I am a student", "i am a student"],
+      exp: "I am a student. — 대문자 I, am 잊지 마세요.",
+    },
+    {
+      type: "sa",
+      q: "'Happy'의 반대말(반의어)을 영어로 쓰세요.",
+      ans: ["sad", "unhappy"],
+      exp: "happy ↔ sad / unhappy.",
+    },
+    {
+      type: "sa",
+      q: "다음을 영작하세요: 너는 어디에 사니?",
+      ans: ["where do you live", "where do you live?"],
+      exp: "Where do you live? — 의문사 + do + 주어 + 동사원형.",
+    },
+    {
+      type: "sa",
+      q: "빈칸을 채우세요: 'I ___ coffee every morning.' (마신다)",
+      ans: ["drink"],
+      exp: "I drink coffee. — 1인칭 단수 현재형은 동사원형.",
+    },
+    {
+      type: "sa",
+      q: "'Summer'는 무슨 계절인가요? 영어로 쓰세요.",
+      ans: ["summer", "a summer", "the summer"],
+      exp: "Summer = 여름.",
+    },
+  ] as SAQuestion[],
+  li: [
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "Hello! My name is Tom. I am from Korea. I like pizza and coffee.",
+      prompt: "Tom은 어디 출신인가요?",
+      ch: ["미국", "영국", "한국", "일본"],
+      a: 2,
+      exp: "I am from Korea = 한국 출신.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "What time is it? It is three thirty in the afternoon.",
+      prompt: "지금 몇 시인가요?",
+      ch: ["오후 2시 30분", "오후 3시 30분", "오전 3시 30분", "오후 3시"],
+      a: 1,
+      exp: "three thirty in the afternoon = 오후 3시 30분.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "I am hungry. Can we get some food? I want a sandwich and orange juice.",
+      prompt: "화자가 원하는 것은?",
+      ch: [
+        "피자와 콜라",
+        "샌드위치와 오렌지주스",
+        "햄버거와 커피",
+        "샐러드와 물",
+      ],
+      a: 1,
+      exp: "I want a sandwich and orange juice.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "The weather today is sunny and warm. It is a perfect day for a walk in the park.",
+      prompt: "오늘 날씨는?",
+      ch: ["비가 와서 춥다", "맑고 따뜻하다", "흐리고 시원하다", "눈이 온다"],
+      a: 1,
+      exp: "sunny and warm = 맑고 따뜻하다.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "Do you have any brothers or sisters? I have one brother and two sisters.",
+      prompt: "화자의 형제자매는?",
+      ch: [
+        "남동생 1명",
+        "여동생 2명",
+        "남동생 1명 + 여동생 2명",
+        "형제자매 없음",
+      ],
+      a: 2,
+      exp: "one brother and two sisters.",
+    },
+  ] as LIQuestion[],
+  sp: [
+    {
+      type: "sp",
+      q: "다음 문장을 소리 내어 읽고 녹음하세요.",
+      prompt: "'Nice to meet you! My name is ___.' 자신의 이름을 넣어 말해보세요.",
+      rubric: "발음, 억양, 자연스러움.",
+    },
+    {
+      type: "sp",
+      q: "다음 질문에 영어로 답해보세요.",
+      prompt: "'What is your favorite food?' (좋아하는 음식이 뭔가요?)",
+      rubric: "좋아하는 음식과 간단한 이유.",
+    },
+    {
+      type: "sp",
+      q: "다음 문장을 영어로 말해보세요.",
+      prompt: "'오늘 날씨가 정말 좋아요.'를 영어로 말해보세요.",
+      rubric: "The weather is really nice today. 또는 비슷한 표현이면 OK.",
+    },
+    {
+      type: "sp",
+      q: "다음 대화에 자연스럽게 답해보세요.",
+      prompt: "'How are you today?'에 자연스럽게 대답.",
+      rubric: "I'm fine/great + How about you? 같은 되묻기면 훌륭.",
+    },
+    {
+      type: "sp",
+      q: "다음을 영어로 말해보세요.",
+      prompt: "자신의 직업이나 하는 일을 한 문장으로 소개해보세요.",
+      rubric: "I am a / I work as a / I study 구조.",
+    },
+  ] as SPQuestion[],
+};
+
+// ─── ADVANCED BANK ───
+// 적응형: 첫 5문제(MC) 정답 4~5개 → advanced로 분기.
+export const QB_ADVANCED = {
+  mc: [],
+  sa: [
+    {
+      type: "sa",
+      q: "다음 문장을 더 격식체로 바꾸세요: 'We need to talk about the budget problem.'",
+      ans: [
+        "we would like to address the budgetary concern",
+        "i would like to discuss the budget issue",
+        "we need to address the budget issue",
+        "we wish to discuss the budgetary matter",
+      ],
+      exp: "need to → would like to / wish to. problem → issue/concern.",
+    },
+    {
+      type: "sa",
+      q: "'The new regulation will take effect next quarter.' — 'take effect'와 같은 의미의 표현을 쓰세요.",
+      ans: [
+        "come into force",
+        "become effective",
+        "become operative",
+        "go into effect",
+        "come into effect",
+      ],
+      exp: "take effect = come into force/effect = become effective.",
+    },
+    {
+      type: "sa",
+      q: "다음을 영작하세요: '그녀가 그 사실을 알고 있었더라면, 더 일찍 조치를 취했을 것이다.'",
+      ans: [
+        "if she had known the fact she would have taken action earlier",
+        "had she known the fact she would have taken action earlier",
+        "if she had known that she would have acted sooner",
+      ],
+      exp: "가정법 과거완료: If + had p.p., would have p.p.",
+    },
+    {
+      type: "sa",
+      q: "빈칸에 알맞은 접속어를 쓰세요: 'The project was completed on time; ___, the quality was compromised.'",
+      ans: ["however", "nevertheless", "nonetheless", "that said"],
+      exp: "역접 부사 → however / nevertheless / nonetheless.",
+    },
+    {
+      type: "sa",
+      q: "'She gave an off-the-cuff response.' — 'off-the-cuff'의 의미를 한국어로 쓰세요.",
+      ans: ["즉흥적인", "즉석에서", "준비 없이", "막힘없이"],
+      exp: "off-the-cuff = 즉흥적인. on the spot과 동의어.",
+    },
+  ] as SAQuestion[],
+  li: [
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "The paradigm shift we are witnessing in renewable energy sector is unprecedented. Notwithstanding the initial capital expenditure, long-term ROI projections indicate substantial returns within a decade.",
+      prompt: "이 발언의 핵심 주장은?",
+      ch: [
+        "재생에너지 초기 비용이 너무 높다",
+        "재생에너지는 장기적으로 높은 수익을 기대할 수 있다",
+        "재생에너지 산업은 성장이 더디다",
+        "재생에너지 투자는 리스크가 너무 크다",
+      ],
+      a: 1,
+      exp: "notwithstanding 초기 비용 + long-term ROI substantial returns.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "We need to reconcile the discrepancy between the projected figures and actual expenditure. I'd recommend convening an emergency audit committee.",
+      prompt: "화자가 제안하는 것은?",
+      ch: ["예산 삭감", "비상 감사 위원회 소집", "프로젝트 취소", "재정 보고서 재작성"],
+      a: 1,
+      exp: "convening an emergency audit committee.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "The contract stipulates that any amendments must be ratified by both parties within thirty days. Failure to comply will render the modifications null and void.",
+      prompt: "'null and void'가 의미하는 것은?",
+      ch: ["법적 효력이 없음", "즉시 발효됨", "수정 가능함", "양측이 동의함"],
+      a: 0,
+      exp: "null and void = 무효의.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "Pursuant to the memorandum of understanding signed last quarter, all intellectual property developed in this collaboration shall be jointly owned by both entities.",
+      prompt: "지적재산권은 누구에게 귀속되나요?",
+      ch: ["한쪽 회사", "양측 공동 소유", "제3자 기관", "정부 소유"],
+      a: 1,
+      exp: "jointly owned by both entities = 양측 공동 소유.",
+    },
+    {
+      type: "li",
+      q: "대화를 듣고 알맞은 답을 고르세요.",
+      tts: "The crux of the matter lies in our inability to extrapolate reliable data from the existing sample size. We must expand our dataset before drawing any definitive conclusions.",
+      prompt: "화자가 강조하는 문제는?",
+      ch: [
+        "데이터 보안 문제",
+        "샘플 크기가 너무 작아 신뢰성 있는 결론 도출 불가",
+        "연구 예산 부족",
+        "팀원 간 의견 충돌",
+      ],
+      a: 1,
+      exp: "inability to extrapolate reliable data from existing sample size.",
+    },
+  ] as LIQuestion[],
+  sp: [
+    {
+      type: "sp",
+      q: "다음 주제에 대해 영어로 말해보세요.",
+      prompt: "'What are the pros and cons of remote work?' (재택근무의 장단점)",
+      rubric: "On one hand / On the other hand 구조로 균형 잡힌 의견.",
+    },
+    {
+      type: "sp",
+      q: "다음 비즈니스 상황에서 말해보세요.",
+      prompt: "투자자에게 새 프로젝트를 30초 내외로 영어 pitch.",
+      rubric: "We are developing / Our product solves / The market opportunity 구조.",
+    },
+    {
+      type: "sp",
+      q: "다음 문장을 자연스럽게 읽어보세요.",
+      prompt:
+        "'Notwithstanding the initial challenges, the strategic realignment has yielded considerable improvements in operational efficiency.'",
+      rubric: "고급 어휘의 정확한 발음과 자연스러운 억양.",
+    },
+    {
+      type: "sp",
+      q: "다음 질문에 영어로 답해보세요.",
+      prompt: "'How do you handle conflicting priorities at work?'",
+      rubric: "When faced with conflicting priorities, I typically + 구체 전략.",
+    },
+    {
+      type: "sp",
+      q: "다음을 영어로 설명해보세요.",
+      prompt: "'opportunity cost' 개념을 영어로 설명 + 실생활 예시.",
+      rubric: "Opportunity cost refers to + 명확한 예시.",
+    },
+  ] as SPQuestion[],
+};
+
+// ─── INTERMEDIATE BANK (default + calibration용 MC) ───
 // 비즈니스 / 일상 영어 혼합 — 임원·전문직 niveau에 맞춤.
 export const QB_INTERMEDIATE = {
   mc: [

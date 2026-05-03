@@ -1,27 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AXIS_KO, AXIS_DESC, levelFromScore, type Axis } from "../_data";
+import {
+  AXIS_KO,
+  AXIS_DESC,
+  levelFromScore,
+  type Axis,
+  type Level,
+} from "../_data";
 
 /* ENGZ 진단 결과 페이지.
  * URL: /diagnose/result?r=<base64url-encoded payload>
- * Payload (decoded JSON): { v:1, t:number, a:Record<Axis,number>, ts:number }
+ * Payload (decoded JSON):
+ *   v:1 — { v, t, a, ts }
+ *   v:2 — { v, t, a, l, ts } (적응형 난이도 분기 추가)
  *
  * 디자인 결정:
  *  - 클라이언트 디코드만으로 충분 (DB 무관) — Preply / EF SET 패턴.
  *  - 인코딩은 base64url, 평균 130자 안쪽 — 카톡 공유 OK.
  *  - 5축 한글 라벨 (의사소통·발음·문법·유창성·이해력) — CEFR 약어보다
  *    한국 임원/대표층에 잘 읽힘 (RESEARCH 결론).
+ *  - 동급 직군 백분위: 정규분포 N(58, 16) 기준 추정 — 한국 직장인
+ *    영어 학습자 분포 (EF EPI 2024 한국 평균 60 + B2B 학습자 자기선택
+ *    편향 -2 = 58, 표준편차 16). 실제 모수 누적되면 교체 예정.
  */
 
 const BRAND = "#FF5C39";
 
-interface ResultPayload {
-  v: number;
+interface ResultPayloadV1 {
+  v: 1;
   t: number;
   a: Record<Axis, number>;
   ts: number;
 }
+interface ResultPayloadV2 {
+  v: 2;
+  t: number;
+  a: Record<Axis, number>;
+  l: Level;
+  ts: number;
+}
+type ResultPayload = ResultPayloadV1 | ResultPayloadV2;
 
 function decodeResult(s: string | null): ResultPayload | null {
   if (!s) return null;
@@ -29,12 +48,41 @@ function decodeResult(s: string | null): ResultPayload | null {
     const b64 = s.replace(/-/g, "+").replace(/_/g, "/");
     const padded = b64 + "===".slice((b64.length + 3) % 4);
     const json = decodeURIComponent(escape(atob(padded)));
-    const obj = JSON.parse(json) as ResultPayload;
-    if (obj.v !== 1) return null;
-    return obj;
+    const obj = JSON.parse(json);
+    if (obj.v === 1 || obj.v === 2) return obj as ResultPayload;
+    return null;
   } catch {
     return null;
   }
+}
+
+// ─── 동급 직군 백분위 ───
+// 정규분포 CDF로 score → 동급 학습자 중 백분위 추정.
+// "상위 X%" = 100 - percentile.
+// μ=58, σ=16 — 한국 직장인 학습자 추정 분포.
+function erf(x: number): number {
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
+  const sign = x >= 0 ? 1 : -1;
+  const ax = Math.abs(x);
+  const t = 1 / (1 + p * ax);
+  const y =
+    1 -
+    ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) *
+      t *
+      Math.exp(-ax * ax);
+  return sign * y;
+}
+function topPercent(score: number): number {
+  const z = (score - 58) / 16;
+  const cdf = 0.5 * (1 + erf(z / Math.SQRT2));
+  const top = (1 - cdf) * 100;
+  // 과장된 결과 방지: 0.5%~99.5% 사이로 클램프
+  return Math.max(0.5, Math.min(99.5, top));
 }
 
 export default function ResultPage() {
@@ -87,6 +135,11 @@ export default function ResultPage() {
   );
   const strengths = sorted.slice(0, 2);
   const weaknesses = sorted.slice(-2).reverse();
+  const top = topPercent(data.t);
+  const topLabel =
+    top < 5
+      ? `상위 ${top.toFixed(1)}%`
+      : `상위 ${Math.round(top)}%`;
 
   async function share() {
     try {
@@ -146,9 +199,28 @@ export default function ResultPage() {
             </span>
           </div>
 
-          <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">
+          <p className="text-sm sm:text-base text-zinc-600 leading-relaxed mb-5">
             {level.description}
           </p>
+
+          {/* 동급 학습자 중 백분위 — 정규분포 추정 */}
+          <div className="rounded-2xl bg-zinc-50 border border-zinc-200 px-4 py-3.5 flex items-center gap-3">
+            <div
+              className="text-2xl font-extrabold tabular-nums"
+              style={{ color: BRAND }}
+            >
+              {topLabel}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-zinc-900">
+                한국 직장인 영어 학습자 중
+              </div>
+              <div className="text-xs text-zinc-500 leading-relaxed mt-0.5">
+                ENGZ 추정 분포 기준 (μ=58, σ=16). 모수가 누적되면 정밀도
+                업데이트 예정.
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* 5축 분석 */}

@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   QB_INTERMEDIATE,
+  QB_BEGINNER,
+  QB_ADVANCED,
   type Axis,
   type Question,
+  type Level,
   AXIS_KO,
 } from "./_data";
 
@@ -32,20 +35,47 @@ interface AnswerRecord {
   domain?: "grammar" | "vocab"; // mc만
 }
 
+const BANKS = {
+  beginner: QB_BEGINNER,
+  intermediate: QB_INTERMEDIATE,
+  advanced: QB_ADVANCED,
+};
+
+// 적응형 분기: 첫 5 MC 점수 → 다음 15문제 난이도.
+//   0~1 정답 → beginner
+//   2~3 정답 → intermediate
+//   4~5 정답 → advanced
+// 분기 결과는 결과 산출 시에도 사용 (점수 보정).
+function decideLevel(mcCorrect: number): Level {
+  if (mcCorrect <= 1) return "beginner";
+  if (mcCorrect <= 3) return "intermediate";
+  return "advanced";
+}
+
 const BRAND = "#FF5C39";
 
 export default function DiagnosePage() {
   const [screen, setScreen] = useState<Screen>("intro");
   const [qIdx, setQIdx] = useState(0);
   const [answers, setAnswers] = useState<AnswerRecord[]>([]);
+  const [level, setLevel] = useState<Level>("intermediate");
 
-  // 모든 20문제를 한 번에 직렬화
+  // 적응형 문제 시퀀스:
+  //   1~5: 항상 intermediate MC (calibration 용도)
+  //   6~10: 결정된 level의 SA
+  //   11~15: 결정된 level의 LI
+  //   16~20: 결정된 level의 SP
   const questions: Question[] = useMemo(() => {
-    const b = QB_INTERMEDIATE;
-    return [...b.mc, ...b.sa, ...b.li, ...b.sp];
-  }, []);
+    const b = BANKS[level];
+    return [
+      ...QB_INTERMEDIATE.mc, // calibration은 고정
+      ...b.sa,
+      ...b.li,
+      ...b.sp,
+    ];
+  }, [level]);
 
-  const total = questions.length;
+  const total = 20;
   const current = questions[qIdx];
   const progress = (qIdx / total) * 100;
 
@@ -54,11 +84,17 @@ export default function DiagnosePage() {
   }
 
   function nextQuestion() {
+    // 5번째 MC 정답 직후 → 난이도 결정 후 다음 15문제 분기
+    if (qIdx === 4) {
+      const mc = answers.filter((a) => a.type === "mc");
+      const mcScore = mc.reduce((s, v) => s + v.correct, 0);
+      setLevel(decideLevel(mcScore));
+    }
     if (qIdx + 1 >= total) {
       setScreen("loading");
       // loading 잠깐 보여주고 결과로 — UX 호흡
       setTimeout(() => {
-        const encoded = encodeResult(answers);
+        const encoded = encodeResult(answers, level);
         // 결과 페이지로 push (replace 아님 — 뒤로 가기로 다시 진단 가능하게)
         window.location.href = `/diagnose/result?r=${encoded}`;
       }, 1400);
@@ -381,6 +417,24 @@ function QuestionView({
             <div className="rounded-xl bg-white border border-zinc-200 px-4 py-3 text-sm text-zinc-600 leading-relaxed">
               💡 {explanation}
             </div>
+          )}
+          {/* 듣기 오답일 때만 — 다시 들으며 어디서 놓쳤는지 확인 */}
+          {q.type === "li" && feedback.result !== "pass" && (
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window === "undefined" || !window.speechSynthesis)
+                  return;
+                const u = new SpeechSynthesisUtterance(q.tts);
+                u.lang = "en-US";
+                u.rate = 0.85;
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(u);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-amber-100 hover:bg-amber-200 px-4 py-2.5 text-sm font-bold text-amber-900 transition-colors"
+            >
+              🔁 다시 들으며 확인하기
+            </button>
           )}
         </div>
       )}
@@ -791,15 +845,24 @@ function SPBody({
  *  결과 인코딩 — answers 배열을 URL-safe base64로
  * ══════════════════════════════════════════════════════════════════════ */
 
-function encodeResult(answers: AnswerRecord[]): string {
+function encodeResult(answers: AnswerRecord[], level: Level): string {
   // 5축 점수 산출 — domain별 / type별 평균
   const axes = computeAxes(answers);
-  const total =
+  // 난이도 보정: beginner는 쉬운 문제만 풀었으니 천장 65, advanced는 60+ 시작.
+  // 단순 mean이 아니라 level이 반영된 보정 점수.
+  const baseTotal =
     Object.values(axes).reduce((s, v) => s + v, 0) / Object.keys(axes).length;
+  const totalAdj =
+    level === "beginner"
+      ? Math.min(baseTotal * 0.6, 45) // 쉬운 문제 만점 ≈ 45 (A2 상한)
+      : level === "advanced"
+      ? Math.min(baseTotal * 0.9 + 15, 100) // 어려운 문제 정답 가중
+      : baseTotal;
   const payload = {
-    v: 1, // 스키마 버전
-    t: Math.round(total),
+    v: 2, // 스키마 버전 (적응형 + 난이도 보정 추가)
+    t: Math.round(totalAdj),
     a: axes,
+    l: level,
     ts: Date.now(),
   };
   const json = JSON.stringify(payload);
